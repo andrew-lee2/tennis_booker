@@ -1,1 +1,4 @@
 config.ini
+.idea/
+venv/
+geckodriver.log
