@@ -4,35 +4,88 @@ import pandas as pd
 from selenium.webdriver.support.ui import Select
 
 
+class Caswell(object):
+    def __init__(self, booking_day_datetime, singles_or_doubles, username, password):
+        self.booking_day_datetime = booking_day_datetime
+        self.singles_or_doubles = singles_or_doubles
+        self.username = username
+        self.password = password
+        self.driver = None
+        self.submit_form_url = 'https://www.10sportal.net/entity/scheduler/index.html'
+
+    def select_driver(self):
+        # TODO will do this later depending on local or not
+        self.driver = webdriver.Firefox()
+
+    def get_login_date(self):
+        return self.booking_day_datetime.strftime('%m/%d/%Y')
+
+    def get_start_time(self):
+        start_time = self.booking_day_datetime.strftime('%I:%M %p')
+        start_time = start_time[1:] if start_time[0] == '0' else start_time
+        return start_time
+
+    def get_courtsheet_time_bucket(self):
+        booking_hour = self.booking_day_datetime.hour
+        booking_minutes = self.booking_day_datetime.minute
+        starting_time_offset = 8
+        time_increments = 2
+
+        return (booking_hour - starting_time_offset) * time_increments + booking_minutes / 30
+
+    def login_to_caswell(self):
+        login_url = 'https://www.10sportal.net/login.html'
+        self.driver.get(login_url)
+        username_input = self.driver.find_element_by_id("j_username")
+        password_input = self.driver.find_element_by_id("j_password")
+        username_input.send_keys(self.username)
+        password_input.send_keys(self.password)
+        login_xpath = '//*[@id="form-login"]/button'
+
+        self.driver.find_element_by_xpath(login_xpath).click()
+
+    def go_to_courtsheet(self):
+        booking_date = self.get_login_date()
+        base_calendar_url = 'https://www.10sportal.net/entity/dashboard/index.html?src=resourceView&lvDate={date}'
+        courtsheet_day_url = base_calendar_url.format(date=booking_date)
+        self.driver.get(courtsheet_day_url)
+
+    def try_to_click_courtsheet(self):
+        click_time_bucket = self.get_courtsheet_time_bucket()
+        bucket_xpath = '//*[@id="calendar"]/div/div/div/div/div/table/tbody/tr[{bucket}]/td/div'
+        bucket_xpath = bucket_xpath.format(bucket=click_time_bucket)
+        bucket = self.driver.find_element_by_xpath(bucket_xpath)
+        action = webdriver.common.action_chains.ActionChains(self.driver)
+
+
+
+
+
+
+
+
 def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    username = config.get('LOGIN_INFO', 'USERNAME')
-    password = config.get('LOGIN_INFO', 'PASSWORD')
+    caswell_username = config.get('LOGIN_INFO', 'USERNAME')
+    caswell_password = config.get('LOGIN_INFO', 'PASSWORD')
 
     tomorrow = pd.to_datetime('today') + pd.DateOffset(days=1)
-    tomorrow_str = tomorrow.strftime('%m/%d/%Y')
+    tomorrow = tomorrow.replace(hour=19, minute=30)
 
-    driver = webdriver.Firefox()
-    login_url = 'https://www.10sportal.net/login.html'
-    base_calendar_url = 'https://www.10sportal.net/entity/dashboard/index.html?src=resourceView&lvDate={date}'
-    schedule_url = base_calendar_url.format(date=tomorrow_str)
-    driver.get(login_url)
+    #TODO inputs need to either be 00 or 30 for minutes
 
-    username_input = driver.find_element_by_id("j_username")
-    password_input = driver.find_element_by_id("j_password")
+    caswell = Caswell(tomorrow, 'singles', caswell_username, caswell_password)
+    caswell.select_driver()
+    print(tomorrow.hour)
+    # caswell.login_to_caswell()
+    #
+    # caswell.go_to_courtsheet()
 
-    username_input.send_keys(username)
-    password_input.send_keys(password)
 
-    driver.find_element_by_xpath('//*[@id="form-login"]/button').click()
 
-    driver.get(schedule_url)
 
-    # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # time.sleep(0.5)
-    # we are going to offset from
     # // *[ @ id = "calendar"] / div / div / div / div / div / table / tbody / tr[1] / td / div
     # // *[ @ id = "calendar"] / div / div / div / div / div / table / tbody / tr[2] / th
     # // *[ @ id = "calendar"] / div / div / div / div / div / table / tbody / tr[28] / th
