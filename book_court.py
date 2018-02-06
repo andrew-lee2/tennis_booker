@@ -11,7 +11,6 @@ class Caswell(object):
         self.username = username
         self.password = password
         self.driver = None
-        self.submit_form_url = 'https://www.10sportal.net/entity/scheduler/index.html'
 
     def select_driver(self):
         # TODO will do this later depending on local or not
@@ -51,17 +50,35 @@ class Caswell(object):
         self.driver.get(courtsheet_day_url)
 
     def try_to_click_courtsheet(self):
+        pixel_court_distance = 95
         click_time_bucket = self.get_courtsheet_time_bucket()
         bucket_xpath = '//*[@id="calendar"]/div/div/div/div/div/table/tbody/tr[{bucket}]/td/div'
         bucket_xpath = bucket_xpath.format(bucket=click_time_bucket)
-        bucket = self.driver.find_element_by_xpath(bucket_xpath)
+
         action = webdriver.common.action_chains.ActionChains(self.driver)
 
+        max_number_of_tries = 20
 
+        while max_number_of_tries > 0:
+            bucket_element = self.driver.find_element_by_xpath(bucket_xpath)
+            action.move_to_element_with_offset(bucket_element, 0 * pixel_court_distance + 75, 0).click().perform()
+            try:
+                reserved_title_xpath = '//*[@id="ui-id-1"]'
+                reserved_element = self.driver.find_element_by_xpath(reserved_title_xpath)
+                if reserved_element.txt == 'Reserved':
+                    # TODO need to update the courts / buckets
+                    pass
 
+            except common.exceptions.NoSuchElementException:
+                submit_url_form = 'https://www.10sportal.net/entity/scheduler/index.html'
+                self.driver.get(submit_url_form)
+                break
 
+    def fill_out_form(self):
+        pass
 
-
+    def try_to_book(self):
+        pass
 
 
 def main():
@@ -83,14 +100,8 @@ def main():
     #
     # caswell.go_to_courtsheet()
 
-
-
-
-    # // *[ @ id = "calendar"] / div / div / div / div / div / table / tbody / tr[1] / td / div
-    # // *[ @ id = "calendar"] / div / div / div / div / div / table / tbody / tr[2] / th
-    # // *[ @ id = "calendar"] / div / div / div / div / div / table / tbody / tr[28] / th
     # if we just iterate down after the courts dont work it should work
-    pixel_court_distance = 95
+
 
     el = driver.find_element_by_xpath('//*[@id="calendar"]/div/div/div/div/div/table/tbody/tr[1]/td/div')
     action = webdriver.common.action_chains.ActionChains(driver)
