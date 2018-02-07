@@ -1,7 +1,8 @@
 import configparser
 from selenium import webdriver, common
-import pandas as pd
 from selenium.webdriver.support.ui import Select
+import pandas as pd
+import re
 
 
 class Caswell(object):
@@ -11,6 +12,7 @@ class Caswell(object):
         self.username = username
         self.password = password
         self.driver = None
+        self.number_of_courts = 8
 
     def select_driver(self):
         # TODO will do this later depending on local or not
@@ -65,13 +67,12 @@ class Caswell(object):
         max_number_of_tries = 16
         pixel_court_distance = 95
         initial_pixel_buffer = 75
-        number_of_courts = 8
 
         while max_number_of_tries > 0:
-            click_time_bucket = 0 if max_number_of_tries / number_of_courts > 0 else click_time_bucket
+            click_time_bucket = 1 if max_number_of_tries / self.number_of_courts > 0 else click_time_bucket
             bucket_xpath = bucket_xpath_raw.format(bucket=click_time_bucket)
             bucket_element = self.driver.find_element_by_xpath(bucket_xpath)
-            pixels_to_move_right = (max_number_of_tries % number_of_courts) * pixel_court_distance + initial_pixel_buffer
+            pixels_to_move_right = (max_number_of_tries % self.number_of_courts) * pixel_court_distance + initial_pixel_buffer
             action.move_to_element_with_offset(bucket_element, pixels_to_move_right, 0).click().perform()
             max_number_of_tries += 1
             try:
@@ -105,7 +106,7 @@ class Caswell(object):
         court_number = Caswell.map_court_to_str(court_str)
         select.select_by_value(court_number)
 
-        self.driver.find_element_by_name("submit").click()
+        # self.driver.find_element_by_name("submit").click()
 
     @staticmethod
     def map_court_to_str(court_str):
@@ -122,7 +123,19 @@ class Caswell(object):
         return court_mapping[court_str]
 
     def try_to_book(self):
-        pass
+        number_of_tries = self.number_of_courts
+        default_court = 'Crt3'
+        self._fill_out_form_and_submit(default_court)
+        # page_content = self.driver.page_source
+        # text = 'The court you are trying to reserve is not available for the date and time you selected.'
+        # text = 'There are no open courts'
+        # text_found = re.search(text, page_content)
+        # print(text_found)
+        # while number_of_tries > 0:
+        self.driver.quit()
+
+
+
 
 
 def main():
@@ -139,53 +152,54 @@ def main():
 
     caswell = Caswell(tomorrow, 'singles', caswell_username, caswell_password)
     caswell.select_driver()
-    print(tomorrow.hour)
-    # caswell.login_to_caswell()
+
+    caswell.login_to_caswell()
     #TODO need to write retry here if it isnt time yet, account for lag etc
-    # caswell.go_to_courtsheet()
+    caswell.go_to_courtsheet()
+
+    caswell.try_to_click_courtsheet()
+
+    # caswell.try_to_book()
 
     # if we just iterate down after the courts dont work it should work
 
 
-    el = driver.find_element_by_xpath('//*[@id="calendar"]/div/div/div/div/div/table/tbody/tr[1]/td/div')
-    action = webdriver.common.action_chains.ActionChains(driver)
-    action.move_to_element_with_offset(el, 0 * pixel_court_distance + 75, 0).click().perform()
-
-    try:
-        el2 = driver.find_element_by_xpath('//*[@id="ui-id-1"]')
-        if el2.txt == 'Reserved':
-            pass
-            # need to try again
-            # will need to put this in a different order
-    except common.exceptions.NoSuchElementException:
-        # print(driver.current_url)
-        # content_box = driver.find_element_by_class_name("content-box-content")
-        driver.get('https://www.10sportal.net/entity/scheduler/index.html')
-        mode_select = Select(driver.find_element_by_name("listMatchTypeID"))
-        mode_select.select_by_value("1")
-        # value "2" = doubles; value "1" = singles
-
-        start_time = driver.find_element_by_id("startTime")
-        end_time = driver.find_element_by_id("endTime")
-        start_time.clear()
-        end_time.clear()
-        start_time.send_keys("11:30 AM")
-        end_time.send_keys("1:00 PM")
-
-        select = Select(driver.find_element_by_name("court"))
-        select.deselect_all()
-        select.select_by_value("229")
-
-        driver.find_element_by_name("submit").click()
+    # el = driver.find_element_by_xpath('//*[@id="calendar"]/div/div/div/div/div/table/tbody/tr[1]/td/div')
+    # action = webdriver.common.action_chains.ActionChains(driver)
+    # action.move_to_element_with_offset(el, 0 * pixel_court_distance + 75, 0).click().perform()
+    #
+    # try:
+    #     el2 = driver.find_element_by_xpath('//*[@id="ui-id-1"]')
+    #     if el2.txt == 'Reserved':
+    #         pass
+    #         # need to try again
+    #         # will need to put this in a different order
+    # except common.exceptions.NoSuchElementException:
+    #     # print(driver.current_url)
+    #     # content_box = driver.find_element_by_class_name("content-box-content")
+    #     driver.get('https://www.10sportal.net/entity/scheduler/index.html')
+    #     mode_select = Select(driver.find_element_by_name("listMatchTypeID"))
+    #     mode_select.select_by_value("1")
+    #     # value "2" = doubles; value "1" = singles
+    #
+    #     start_time = driver.find_element_by_id("startTime")
+    #     end_time = driver.find_element_by_id("endTime")
+    #     start_time.clear()
+    #     end_time.clear()
+    #     start_time.send_keys("11:30 AM")
+    #     end_time.send_keys("1:00 PM")
+    #
+    #     select = Select(driver.find_element_by_name("court"))
+    #     select.deselect_all()
+    #     select.select_by_value("229")
+    #
+    #     driver.find_element_by_name("submit").click()
 
         # this will let us know to keep going, can also parcse this to get to the next court (Crt 6 is open.)
-        text = 'The court you are trying to reserve is not available for the date and time you selected.'
-        if text in driver.page_source:
-            print('hey')
+        # text = 'The court you are trying to reserve is not available for the date and time you selected.'
+        # if text in driver.page_source:
+        #     print('hey')
 
-
-    # the time slots just appear to have the name fc-slotx
-    # x from 0 to 27 based on the time of day starting from 8 am
 
 if __name__ == '__main__':
     main()
