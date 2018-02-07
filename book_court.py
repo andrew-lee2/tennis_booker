@@ -14,11 +14,14 @@ class Caswell(object):
         self.driver = None
         self.number_of_courts = 8
 
-    def select_driver(self):
+    def create_driver(self):
         # TODO will do this later depending on local or not
         self.driver = webdriver.Firefox()
 
-    def _get_login_date(self):
+    def _close_driver(self):
+        self.driver.close()
+
+    def _get_date(self):
         return self.booking_day_datetime.strftime('%m/%d/%Y')
 
     def _get_start_time(self):
@@ -52,36 +55,48 @@ class Caswell(object):
         self.driver.find_element_by_xpath(login_xpath).click()
 
     def go_to_courtsheet(self):
-        booking_date = self._get_login_date()
+        booking_date = self._get_date()
         base_calendar_url = 'https://www.10sportal.net/entity/dashboard/index.html?src=resourceView&lvDate={date}'
         courtsheet_day_url = base_calendar_url.format(date=booking_date)
         self.driver.get(courtsheet_day_url)
 
-    def try_to_click_courtsheet(self):
-        click_time_bucket = self._get_courtsheet_time_bucket()
-        bucket_xpath_raw = '//*[@id="calendar"]/div/div/div/div/div/table/tbody/tr[{bucket}]/td/div'
+    def go_to_form(self):
+        # click_time_bucket = self._get_courtsheet_time_bucket()
+        # bucket_xpath_raw = '//*[@id="calendar"]/div/div/div/div/div/table/tbody/tr[{bucket}]/td/div'
+        # bucket_xpath_raw = '// *[ @ id = "calendar"] / div / div / div / div / div / table / tbody / tr[{bucket}] / th'
+        # print(self.driver.current_url)
+        # top_bar = self.driver.find_element_by_class_name("content-box-content" )
+        # print(top_bar.location)
+        #
+        # action = webdriver.common.action_chains.ActionChains(self.driver)
+        #
+        # i = 0
+        # max_number_of_tries = 8
+        # pixel_court_distance = 95
+        # initial_pixel_buffer_x = 115
+        # initial_pixel_buffer_y = 210
 
+        submit_url_form = 'https://www.10sportal.net/entity/scheduler/index.html'
+        self.driver.get(submit_url_form)
 
-        action = webdriver.common.action_chains.ActionChains(self.driver)
-
-        max_number_of_tries = 16
-        pixel_court_distance = 95
-        initial_pixel_buffer = 75
-
-        while max_number_of_tries > 0:
-            click_time_bucket = 1 if max_number_of_tries / self.number_of_courts > 0 else click_time_bucket
-            bucket_xpath = bucket_xpath_raw.format(bucket=click_time_bucket)
-            bucket_element = self.driver.find_element_by_xpath(bucket_xpath)
-            pixels_to_move_right = (max_number_of_tries % self.number_of_courts) * pixel_court_distance + initial_pixel_buffer
-            action.move_to_element_with_offset(bucket_element, pixels_to_move_right, 0).click().perform()
-            max_number_of_tries += 1
-            try:
-                reserved_title_xpath = '//*[@id="ui-id-1"]'
-                self.driver.find_element_by_xpath(reserved_title_xpath)
-            except common.exceptions.NoSuchElementException:
-                submit_url_form = 'https://www.10sportal.net/entity/scheduler/index.html'
-                self.driver.get(submit_url_form)
-                break
+        # while i < max_number_of_tries:
+        #     # click_time_bucket = 1 if max_number_of_tries / self.number_of_courts > 0 else click_time_bucket
+        #     # bucket_xpath = bucket_xpath_raw.format(bucket=click_time_bucket)
+        #     # bucket_xpath = bucket_xpath_raw.format(bucket=0)
+        #     # bucket_element = self.driver.find_element_by_xpath(bucket_xpath)
+        #     pixels_to_move_right = (max_number_of_tries * pixel_court_distance) + initial_pixel_buffer_x
+        #
+        #     action.move_to_element_with_offset(top_bar, pixels_to_move_right, initial_pixel_buffer_y).click().perform()
+        #     i += 1
+        #     try:
+        #         reserved_title_xpath = '//*[@id="ui-id-1"]'
+        #         reserved_element = self.driver.find_element_by_xpath(reserved_title_xpath)
+        #         if reserved_element.text == 'Reserved':
+        #             continue
+        #     except common.exceptions.NoSuchElementException:
+        #         submit_url_form = 'https://www.10sportal.net/entity/scheduler/index.html'
+        #         self.driver.get(submit_url_form)
+        #         break
 
     def _get_singles_doubles_value(self):
         # value "2" = doubles; value "1" = singles
@@ -93,6 +108,10 @@ class Caswell(object):
         mode_select = Select(self.driver.find_element_by_name("listMatchTypeID"))
         singles_doubles_value = self._get_singles_doubles_value()
         mode_select.select_by_value(singles_doubles_value)
+
+        date = self.driver.find_element_by_id("apptDate")
+        date.clear()
+        date.send_keys(self._get_date())
 
         start_time = self.driver.find_element_by_id("startTime")
         end_time = self.driver.find_element_by_id("endTime")
@@ -106,7 +125,7 @@ class Caswell(object):
         court_number = Caswell.map_court_to_str(court_str)
         select.select_by_value(court_number)
 
-        # self.driver.find_element_by_name("submit").click()
+        self.driver.find_element_by_name("submit").click()
 
     @staticmethod
     def map_court_to_str(court_str):
@@ -123,16 +142,23 @@ class Caswell(object):
         return court_mapping[court_str]
 
     def try_to_book(self):
+        # print(self.driver.current_url)
         number_of_tries = self.number_of_courts
         default_court = 'Crt3'
         self._fill_out_form_and_submit(default_court)
-        # page_content = self.driver.page_source
-        # text = 'The court you are trying to reserve is not available for the date and time you selected.'
+        self.driver.switch_to.active_element
+        page_content = self.driver.page_source
+        # print(page_content)
+        text = 'The court you are trying to reserve is not available for the date and time you selected. There are no open courts.'
         # text = 'There are no open courts'
-        # text_found = re.search(text, page_content)
+        with open("Output.txt", "w") as text_file:
+            text_file.write(page_content)
+        text_found = re.search(text, page_content)
+        if text_found:
+            print('there is text')
         # print(text_found)
         # while number_of_tries > 0:
-        self.driver.quit()
+        # self.driver.quit()
 
 
 
@@ -151,18 +177,17 @@ def main():
     #TODO inputs need to either be 00 or 30 for minutes
 
     caswell = Caswell(tomorrow, 'singles', caswell_username, caswell_password)
-    caswell.select_driver()
-
+    caswell.create_driver()
     caswell.login_to_caswell()
     #TODO need to write retry here if it isnt time yet, account for lag etc
     caswell.go_to_courtsheet()
 
-    caswell.try_to_click_courtsheet()
+    caswell.go_to_form()
 
-    # caswell.try_to_book()
-
+    caswell.try_to_book()
+    # t = webdriver.Firefox()
+    # t.find_element_by_class_name()
     # if we just iterate down after the courts dont work it should work
-
 
     # el = driver.find_element_by_xpath('//*[@id="calendar"]/div/div/div/div/div/table/tbody/tr[1]/td/div')
     # action = webdriver.common.action_chains.ActionChains(driver)
