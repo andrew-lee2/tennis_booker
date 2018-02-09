@@ -141,14 +141,14 @@ class Caswell(object):
 def main():
     config = configparser.ConfigParser()
     # TODO will need to absolute path for cron
-    config.read('config.ini')
+    config.read('/home/andrewlee/git_repos/tennis_booker/config.ini')
 
     caswell_username = config.get('LOGIN_INFO', 'USERNAME')
     caswell_password = config.get('LOGIN_INFO', 'PASSWORD')
 
-    booking_day = pd.to_datetime('2/7/18')
+    booking_day = pd.to_datetime('2/13/18')
     # inputs need to either be 00 or 30 for minutes
-    booking_day = booking_day.replace(hour=15, minute=30)
+    booking_day = booking_day.replace(hour=19, minute=30)
 
     caswell = Caswell(booking_day, 'singles', caswell_username, caswell_password)
     caswell.create_driver()
