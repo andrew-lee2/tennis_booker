@@ -1,8 +1,10 @@
 import configparser
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+import selenium
 import pandas as pd
 import time
+import os
 
 
 class Caswell(object):
@@ -16,7 +18,12 @@ class Caswell(object):
 
     def create_driver(self):
         # TODO will need to make headless if not on box
-        self.driver = webdriver.Firefox()
+        try:
+            phantomjs_path = os.environ.get('PHANTOMJS_PATH', None)
+            phantomjs_path = phantomjs_path + "/phantomjs"
+            self.driver = webdriver.PhantomJS(executable_path=phantomjs_path)
+        except selenium.common.exceptions.WebDriverException:
+            self.driver = webdriver.Firefox()
 
     def login_to_caswell(self):
         login_url = 'https://www.10sportal.net/login.html'
@@ -141,7 +148,8 @@ class Caswell(object):
 def main():
     config = configparser.ConfigParser()
     # TODO will need to absolute path for cron
-    config.read('/home/andrewlee/git_repos/tennis_booker/config.ini')
+    config.read(os.path.join(os.path.dirname(__file__), r'config.ini'))
+    # config.read('/home/andrewlee/git_repos/tennis_booker/config.ini')
 
     caswell_username = config.get('LOGIN_INFO', 'USERNAME')
     caswell_password = config.get('LOGIN_INFO', 'PASSWORD')
