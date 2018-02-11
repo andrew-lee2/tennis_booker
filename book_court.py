@@ -151,6 +151,7 @@ def main():
     config.read(os.path.join(os.path.dirname(__file__), r'config.ini'))
     # config.read('/home/andrewlee/git_repos/tennis_booker/config.ini')
 
+
     caswell_username = config.get('LOGIN_INFO', 'USERNAME')
     caswell_password = config.get('LOGIN_INFO', 'PASSWORD')
 
