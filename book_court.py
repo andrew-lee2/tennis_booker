@@ -22,7 +22,7 @@ class Caswell(object):
             phantomjs_path = os.environ.get('PHANTOMJS_PATH', None)
             phantomjs_path = phantomjs_path + "/phantomjs"
             self.driver = webdriver.PhantomJS(executable_path=phantomjs_path)
-        except selenium.common.exceptions.WebDriverException:
+        except:
             self.driver = webdriver.Firefox()
 
     def login_to_caswell(self):
@@ -46,7 +46,7 @@ class Caswell(object):
         self.driver.get(courtsheet_url)
 
     def go_to_form(self):
-        max_tries = 30
+        max_tries = 110
         submit_url_form = 'https://www.10sportal.net/entity/scheduler/index.html'
         i = 0
         while i < max_tries:
@@ -55,7 +55,7 @@ class Caswell(object):
             if self.driver.current_url == submit_url_form:
                 break
             else:
-                time.sleep(2)
+                time.sleep(.25)
 
     def try_to_book(self):
         number_of_tries = self.number_of_courts
@@ -151,14 +151,16 @@ def main():
     config.read(os.path.join(os.path.dirname(__file__), r'config.ini'))
     # config.read('/home/andrewlee/git_repos/tennis_booker/config.ini')
 
+    try:
+        caswell_username = config.get('LOGIN_INFO', 'USERNAME')
+        caswell_password = config.get('LOGIN_INFO', 'PASSWORD')
+    except:
+        caswell_username = os.environ.get('CASWELL_USER', None)
+        caswell_password = os.environ.get('CASWELL_PW', None)
 
-
-    caswell_username = config.get('LOGIN_INFO', 'USERNAME')
-    caswell_password = config.get('LOGIN_INFO', 'PASSWORD')
-
-    booking_day = pd.to_datetime('2/13/18')
+    booking_day = pd.to_datetime('2/12/18')
     # inputs need to either be 00 or 30 for minutes
-    booking_day = booking_day.replace(hour=19, minute=30)
+    booking_day = booking_day.replace(hour=14, minute=30)
 
     caswell = Caswell(booking_day, 'singles', caswell_username, caswell_password)
     caswell.create_driver()
