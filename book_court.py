@@ -66,7 +66,7 @@ class Caswell(object):
         while i < number_of_tries:
             i += 1
             self._fill_out_form_and_submit(default_court)
-            print self.driver.current_url
+            print(self.driver.current_url)
             if self.driver.current_url == self._get_courtsheet_url() + '&objStart=1':
                 break
             else:
