@@ -66,6 +66,7 @@ class Caswell(object):
         while i < number_of_tries:
             i += 1
             self._fill_out_form_and_submit(default_court)
+            print self.driver.current_url
             if self.driver.current_url == self._get_courtsheet_url() + '&objStart=1':
                 break
             else:
@@ -98,10 +99,14 @@ class Caswell(object):
         start_time.send_keys(self._get_start_time())
         end_time.send_keys(self._get_end_time())
 
+        print start_time
+        print end_time
+
         select = Select(self.driver.find_element_by_name("court"))
         select.deselect_all()
         court_number = Caswell.map_court_to_str(court_str)
         select.select_by_value(court_number)
+        print court_number
 
         self.driver.find_element_by_name("submit").click()
 
