@@ -6,6 +6,10 @@ from twilio.twiml.messaging_response import MessagingResponse
 
 app = Flask(__name__)
 
+@app.route('/')
+def home():
+    return "display_test"
+
 @app.route("/sms", methods=['GET', 'POST'])
 def sms_parse():
     number = request.form['From']
