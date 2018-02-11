@@ -99,8 +99,8 @@ class Caswell(object):
         start_time.send_keys(self._get_start_time())
         end_time.send_keys(self._get_end_time())
 
-        print(start_time)
-        print(end_time)
+        print('start {}'.format(start_time))
+        print('end {}'.format(end_time))
 
         select = Select(self.driver.find_element_by_name("court"))
         select.deselect_all()
