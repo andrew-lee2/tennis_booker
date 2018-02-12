@@ -1,7 +1,6 @@
 import configparser
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
-import selenium
 import pandas as pd
 import time
 import os
@@ -17,22 +16,15 @@ class Caswell(object):
         self.number_of_courts = 8
 
     def create_driver(self):
-        # TODO will need to make headless if not on box
-        # try:
-            # phantomjs_path = os.environ.get('PHANTOMJS_PATH', None)
-            # phantomjs_path = phantomjs_path + "/phantomjs"
-            # self.driver = webdriver.PhantomJS(executable_path=phantomjs_path)
-        options = webdriver.ChromeOptions()
-        options.add_argument('headless')
-        chromedriver_path = os.environ.get('CHROME_PATH', None)
-        options.binary_location = chromedriver_path
-        # chromedriver_path = chromedriver_path + "/chromedriver"
-        self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
-        # except:
-        #     options = webdriver.ChromeOptions()
-        #     options.add_argument('headless')
-        #     chromedriver = '/Users/andrewlee/Downloads/chromedriver'
-        #     self.driver = webdriver.Chrome(chromedriver, chrome_options=options)
+        try:
+            options = webdriver.ChromeOptions()
+            options.add_argument('headless')
+            chromedriver_path = os.environ.get('CHROME_PATH', None)
+            options.binary_location = chromedriver_path
+            self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+        except:
+            chromedriver = '/Users/andrewlee/Downloads/chromedriver'
+            self.driver = webdriver.Chrome(chromedriver)
 
     def login_to_caswell(self):
         login_url = 'https://www.10sportal.net/login.html'
@@ -75,7 +67,6 @@ class Caswell(object):
         while i < number_of_tries:
             i += 1
             self._fill_out_form_and_submit(default_court)
-            # print(self.driver.current_url)
             if self.driver.current_url == self._get_courtsheet_url() + '&objStart=1':
                 break
             else:
@@ -108,14 +99,10 @@ class Caswell(object):
         start_time.send_keys(self._get_start_time())
         end_time.send_keys(self._get_end_time())
 
-        # print('start {}'.format(start_time))
-        # print('end {}'.format(end_time))
-
         select = Select(self.driver.find_element_by_name("court"))
         select.deselect_all()
         court_number = Caswell.map_court_to_str(court_str)
         select.select_by_value(court_number)
-        # print(court_number)
 
         self.driver.find_element_by_name("submit").click()
 
