@@ -18,20 +18,20 @@ class Caswell(object):
 
     def create_driver(self):
         # TODO will need to make headless if not on box
-        try:
+        # try:
             # phantomjs_path = os.environ.get('PHANTOMJS_PATH', None)
             # phantomjs_path = phantomjs_path + "/phantomjs"
             # self.driver = webdriver.PhantomJS(executable_path=phantomjs_path)
-            options = webdriver.ChromeOptions()
-            options.add_argument('headless')
-            chromedriver_path = os.environ.get('CHROME_PATH', None)
-            # chromedriver_path = chromedriver_path + "/chromedriver"
-            self.driver = webdriver.Chrome(chromedriver_path, chrome_options=options)
-        except:
-            options = webdriver.ChromeOptions()
-            options.add_argument('headless')
-            chromedriver = '/Users/andrewlee/Downloads/chromedriver'
-            self.driver = webdriver.Chrome(chromedriver, chrome_options=options)
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        chromedriver_path = os.environ.get('CHROME_PATH', None)
+        # chromedriver_path = chromedriver_path + "/chromedriver"
+        self.driver = webdriver.Chrome(chromedriver_path, chrome_options=options)
+        # except:
+        #     options = webdriver.ChromeOptions()
+        #     options.add_argument('headless')
+        #     chromedriver = '/Users/andrewlee/Downloads/chromedriver'
+        #     self.driver = webdriver.Chrome(chromedriver, chrome_options=options)
 
     def login_to_caswell(self):
         login_url = 'https://www.10sportal.net/login.html'
