@@ -25,8 +25,9 @@ class Caswell(object):
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
         chromedriver_path = os.environ.get('CHROME_PATH', None)
+        options.binary_location = chromedriver_path
         # chromedriver_path = chromedriver_path + "/chromedriver"
-        self.driver = webdriver.Chrome(chromedriver_path, chrome_options=options)
+        self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
         # except:
         #     options = webdriver.ChromeOptions()
         #     options.add_argument('headless')
