@@ -5,6 +5,7 @@ from twilio.rest import Client
 from apscheduler.schedulers.blocking import BlockingScheduler
 import pandas as pd
 from datetime import datetime, timedelta
+import os
 
 
 app = Flask(__name__)
@@ -27,18 +28,30 @@ def sms_parse():
     # correct = parser.check_format()
 
     # Start our response
-    resp = MessagingResponse()
+    # resp = MessagingResponse()
+    parts = request.form['Body']
+    print(parts)
 
     # Add a message
     # resp.message('placeholder')
     alarm_time = datetime.now() + timedelta(minutes=2)
-    scheduler.add_job(send_response, 'date', run_date=alarm_time, args=[resp])
+    scheduler.add_job(send_response, 'date', run_date=alarm_time, args=[request])
 
 
-def send_response(request):
+def send_response(message):
+    send_back_num = message.form['From']
+
+    twilio_sid = os.environ.get('TWILIO_SID', None)
+    twilio_token_auth = os.environ.get('TWILIO_AUTH', None)
+    client = Client(twilio_sid, twilio_token_auth)
     # eventually need to change the resp to sending messages properly
     now = pd.to_datetime('now').strftime("%Y-%m-%d %H:%M:%S")
-    request.message('Texting you back at {}'.format(now))
+    message_txt = 'Texting you back at {}'.format(now)
+
+    client.api.account.messages.create(
+        to=send_back_num,
+        from_="+12349013540",
+        body=message_txt)
 
 
 if __name__ == "__main__":
