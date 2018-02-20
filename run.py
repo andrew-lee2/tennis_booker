@@ -32,14 +32,16 @@ def sms_parse():
     # resp = MessagingResponse()
     # Add a message
     # resp.message('placeholder')
+    message_num = request.form['From']
     alarm_time = datetime.now() + timedelta(minutes=2)
-    scheduler.add_job(send_response, 'date', run_date=alarm_time, args=[request])
+
+    scheduler.add_job(send_response, 'date', run_date=alarm_time, args=[message_num])
 
     return "recorded"
 
 
 def send_response(message):
-    send_back_num = message.form['From']
+    send_back_num = message
 
     twilio_sid = os.environ.get('TWILIO_SID', None)
     twilio_token_auth = os.environ.get('TWILIO_AUTH', None)
