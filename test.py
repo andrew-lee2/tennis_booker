@@ -5,7 +5,6 @@ You can exit the program, restart it and observe that any previous alarms that h
 are still active. You can also give it the database URL as an argument.
 See the SQLAlchemy documentation on how to construct those.
 """
-
 from datetime import datetime, timedelta
 import sys
 import os
