@@ -3,6 +3,7 @@ from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
 from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.scheduler import Scheduler
 import pandas as pd
 from datetime import datetime, timedelta
 import os
@@ -29,9 +30,6 @@ def sms_parse():
 
     # Start our response
     # resp = MessagingResponse()
-    parts = request.form['Body']
-    print(parts)
-
     # Add a message
     # resp.message('placeholder')
     alarm_time = datetime.now() + timedelta(minutes=2)
@@ -55,4 +53,5 @@ def send_response(message):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run()
