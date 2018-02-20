@@ -2,7 +2,7 @@
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 import pandas as pd
 from datetime import datetime, timedelta
 import os
@@ -10,7 +10,7 @@ import os
 
 app = Flask(__name__)
 
-scheduler = BlockingScheduler()
+scheduler = BackgroundScheduler()
 scheduler.start()
 
 @app.route('/')
