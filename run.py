@@ -1,6 +1,7 @@
 # /usr/bin/env python
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
+from twilio.rest import Client
 from apscheduler.schedulers.blocking import BlockingScheduler
 import pandas as pd
 from datetime import datetime, timedelta
@@ -26,12 +27,12 @@ def sms_parse():
     # correct = parser.check_format()
 
     # Start our response
-    # resp = MessagingResponse()
+    resp = MessagingResponse()
 
     # Add a message
     # resp.message('placeholder')
     alarm_time = datetime.now() + timedelta(minutes=2)
-    scheduler.add_job(send_response, 'date', run_date=alarm_time, args=[request])
+    scheduler.add_job(send_response, 'date', run_date=alarm_time, args=[resp])
 
 
 def send_response(request):
