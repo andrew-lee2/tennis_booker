@@ -1,13 +1,23 @@
-from apscheduler.schedulers.blocking import BlockingScheduler
+from datetime import datetime
+import time
+import os
+from apscheduler.schedulers.background import BackgroundScheduler
 
-# TODO what time does heroku use?
-def job_function():
-    print "Hello World"
 
-sched = BlockingScheduler()
+def tick():
+    print('Tick! The time is: %s' % datetime.now())
 
-# Schedules job_function to be run on the third Friday
-# of June, July, August, November and December at 00:00, 01:00, 02:00 and 03:00
-sched.add_job(job_function, 'cron', month='2', day='12', hour='15', minute=30)
 
-sched.start()
+if __name__ == '__main__':
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(tick, 'interval', seconds=3)
+    scheduler.start()
+    print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
+
+    try:
+        # This is here to simulate application activity (which keeps the main thread alive).
+        while True:
+            time.sleep(2)
+    except (KeyboardInterrupt, SystemExit):
+        # Not strictly necessary if daemonic mode is enabled but should be done if possible
+        scheduler.shutdown()
