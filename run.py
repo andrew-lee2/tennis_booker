@@ -8,6 +8,9 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
+scheduler = BlockingScheduler()
+scheduler.start()
+
 @app.route('/')
 def home():
     return "display_test"
@@ -27,7 +30,7 @@ def sms_parse():
 
     # Add a message
     # resp.message('placeholder')
-    alarm_time = datetime.now() + timedelta(minutes=10)
+    alarm_time = datetime.now() + timedelta(minutes=2)
     scheduler.add_job(send_response, 'date', run_date=alarm_time, args=[request])
 
 
@@ -38,5 +41,4 @@ def send_response(request):
 
 
 if __name__ == "__main__":
-    scheduler = BlockingScheduler()
     app.run(debug=True)
