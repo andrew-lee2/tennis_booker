@@ -14,6 +14,10 @@ app = Flask(__name__)
 scheduler = BackgroundScheduler()
 scheduler.start()
 
+@app.route('/wakemydyno.txt')
+def no_sleep():
+    return "no sleep"
+
 @app.route('/')
 def home():
     return "display_test"
