@@ -41,6 +41,7 @@ class Parser(object):
 
     def _get_date(self):
         full_date_str = self.date + self.time + self.am_or_pm
+        print full_date_str
         self.playing_time = pd.to_datetime(full_date_str)
 
     def to_book_now(self):

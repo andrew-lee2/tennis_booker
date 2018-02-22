@@ -30,6 +30,7 @@ def sms_parse():
     playing_time = message_parser.playing_time
 
     if book_now:
+        send_response(message_number, 'Trying to book')
         run_booker(playing_time, match_type)
         response_str = 'Ran for {}'.format(playing_time)
     else:
@@ -37,7 +38,7 @@ def sms_parse():
             scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=[playing_time, match_type])
             response_str = 'Scheduled to run on {} for {}'.format(booking_dt, playing_time)
         else:
-            response_str = 'Error: needs to be in DD/MM/YYYY HH:MM PM/AM singles/doubles format'
+            response_str = 'Error: needs to be in MM/DD/YYYY HH:MM PM/AM singles/doubles format'
 
     send_response(message_number, response_str)
 
@@ -46,7 +47,7 @@ def sms_parse():
 
 def send_response(return_number, message_response):
     send_back_num = return_number
-
+    # TODO need to cache twilio auth
     twilio_sid = os.environ.get('TWILIO_SID', None)
     twilio_token_auth = os.environ.get('TWILIO_AUTH', None)
     client = Client(twilio_sid, twilio_token_auth)
