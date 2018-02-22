@@ -46,6 +46,9 @@ class Parser(object):
     def to_book_now(self):
         if self._check_format():
             self._split_message()
+        else:
+            # this prob isnt good
+            return False
         # else:
             # we need to return the string here maybe we can just dervive with None
             # return None
