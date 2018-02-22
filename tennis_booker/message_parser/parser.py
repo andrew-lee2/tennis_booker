@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 
+
 class Parser(object):
     def __init__(self, message):
         self.message = message
@@ -8,6 +9,8 @@ class Parser(object):
         self.time = None
         self.am_or_pm = None
         self.game_type = None
+        self.booking_time = None
+        self.playing_time = None
 
     def _check_format(self):
         # MM/DD/YYYY HH:MM AM or PM singles/doubles
@@ -20,20 +23,32 @@ class Parser(object):
 
     def _split_message(self):
         # TODO I think we need to break this out into a "main" function
-        if self.check_format():
-            message_parts = self.message.split(' ')
-            self.date = message_parts[0]
-            self.time = message_parts[1]
-            self.am_or_pm = message_parts[2]
-            self.game_type = message_parts[3]
+        # if self.check_format():
+        message_parts = self.message.split(' ')
+        self.date = message_parts[0]
+        self.time = message_parts[1]
+        self.am_or_pm = message_parts[2]
+        self.game_type = message_parts[3]
 
-    def check_and_split_contents(self):
-        self._check_format()
-        self._split_message()
+    def _get_booking_time(self, playing_date):
+        booking_time = playing_date - pd.DateOffset(days=2)
+        self.booking_time = booking_time.replace(hours=8, minutes=43)
+        # return self.booking_time
 
-    def get_date(self):
+    def _book_now(self):
+        now = pd.to_datetime('now')
+        return True if now > self.booking_time else False
+
+    def _get_date(self):
         full_date_str = self.date + self.time + self.am_or_pm
-        return pd.to_datetime(full_date_str)
+        self.playing_time = pd.to_datetime(full_date_str)
 
-    def get_game_type(self):
-        return self.game_type
+    def to_book_now(self):
+        if self._check_format():
+            self._split_message()
+        # else:
+            # we need to return the string here maybe we can just dervive with None
+            # return None
+
+        self._get_date()
+        return self._book_now()

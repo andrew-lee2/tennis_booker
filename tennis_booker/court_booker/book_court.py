@@ -146,30 +146,21 @@ class Caswell(object):
         return court_mapping[court_str]
 
 
-def main():
-    config = configparser.ConfigParser()
-    # TODO will need to absolute path for cron
-    config.read(os.path.join(os.path.dirname(__file__), r'config.ini'))
-    # config.read('/home/andrewlee/git_repos/tennis_booker/config.ini')
-
+def run_booker(booking_dt, match_type):
     try:
+        config = configparser.ConfigParser()
+        config.read(os.path.join(os.path.dirname(__file__), r'config.ini'))
+
         caswell_username = config.get('LOGIN_INFO', 'USERNAME')
         caswell_password = config.get('LOGIN_INFO', 'PASSWORD')
     except:
         caswell_username = os.environ.get('CASWELL_USER', None)
         caswell_password = os.environ.get('CASWELL_PW', None)
 
-    booking_day = pd.to_datetime('2/12/18')
-    # inputs need to either be 00 or 30 for minutes
-    booking_day = booking_day.replace(hour=14, minute=30)
-
-    caswell = Caswell(booking_day, 'singles', caswell_username, caswell_password)
+    caswell = Caswell(booking_dt, match_type, caswell_username, caswell_password)
     caswell.create_driver()
     caswell.login_to_caswell()
     caswell.go_to_courtsheet()
     caswell.go_to_form()
     caswell.try_to_book()
-
-
-if __name__ == '__main__':
-    main()
+    # TODO need to return a success or failure message
