@@ -32,7 +32,8 @@ class Parser(object):
 
     def _get_booking_time(self):
         booking_time = self.playing_time - pd.DateOffset(days=2)
-        self.booking_time = booking_time.replace(hours=8, minutes=43)
+
+        self.booking_time = booking_time.replace(hour=8, minute=43)
         # return self.booking_time
 
     def _book_now(self):
