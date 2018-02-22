@@ -30,8 +30,8 @@ class Parser(object):
         self.am_or_pm = message_parts[2]
         self.game_type = message_parts[3]
 
-    def _get_booking_time(self, playing_date):
-        booking_time = playing_date - pd.DateOffset(days=2)
+    def _get_booking_time(self):
+        booking_time = self.playing_time - pd.DateOffset(days=2)
         self.booking_time = booking_time.replace(hours=8, minutes=43)
         # return self.booking_time
 
@@ -54,4 +54,5 @@ class Parser(object):
             # return None
 
         self._get_date()
+        self._get_booking_time()
         return self._book_now()
