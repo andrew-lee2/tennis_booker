@@ -40,8 +40,7 @@ class Parser(object):
         return True if now > self.booking_time else False
 
     def _get_date(self):
-        full_date_str = self.date + self.time + self.am_or_pm
-        print(full_date_str)
+        full_date_str = '{} {} {}'.format(self.date, self.time, self.am_or_pm)
         self.playing_time = pd.to_datetime(full_date_str)
 
     def to_book_now(self):
