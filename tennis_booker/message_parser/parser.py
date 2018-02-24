@@ -31,8 +31,12 @@ class Parser(object):
         self.game_type = message_parts[3]
 
     def _get_booking_time(self):
+        # TODO this might be the problem
         booking_time = self.playing_time - pd.DateOffset(days=2)
-        self.booking_time = booking_time.replace(hour=8, minute=43)
+        booking_time = booking_time.replace(hour=8, minute=43)
+        booking_time = booking_time.tz_localize('US/Central')
+        booking_time = booking_time.astimezone('UTC')
+        self.booking_time = booking_time.isoformat()
 
     def _book_now(self):
         now = pd.to_datetime('now')
@@ -40,11 +44,7 @@ class Parser(object):
 
     def _get_date(self):
         full_date_str = '{} {} {}'.format(self.date, self.time, self.am_or_pm)
-        # TODO convert from UTC to central
-        playing_time = pd.to_datetime(full_date_str)
-        playing_time = playing_time.tz_localize('US/Central')
-        playing_time = playing_time.astimezone('UTC')
-        self.playing_time = playing_time.isoformat()
+        self.playing_time = pd.to_datetime(full_date_str)
 
     def to_book_now(self):
         if self._check_format():
