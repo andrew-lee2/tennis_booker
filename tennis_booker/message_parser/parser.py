@@ -30,11 +30,13 @@ class Parser(object):
         self.am_or_pm = message_parts[2]
         self.game_type = message_parts[3]
 
-    def _get_booking_time(self):
+    def _get_booking_dt(self):
         # TODO this might be the problem
         booking_time = self.playing_time - pd.DateOffset(days=2)
-        booking_time = booking_time.replace(hour=8, minute=43)
-        booking_time = booking_time.tz_localize('US/Central')
+        self.booking_time = booking_time.replace(hour=8, minute=43)
+
+    def _get_booking_utc(self):
+        booking_time = self.booking_time.tz_localize('US/Central')
         booking_time = booking_time.astimezone('UTC')
         self.booking_time = booking_time.isoformat()
 
@@ -57,5 +59,7 @@ class Parser(object):
             # return None
 
         self._get_date()
-        self._get_booking_time()
-        return self._book_now()
+        self._get_booking_dt()
+        to_book = self._book_now()
+        self._get_booking_utc()
+        return to_book
