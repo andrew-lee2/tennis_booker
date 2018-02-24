@@ -17,9 +17,11 @@ class Caswell(object):
 
     def create_driver(self):
         try:
+            # FIXME something not happening here
             options = webdriver.ChromeOptions()
             options.add_argument('headless')
             chromedriver_path = os.environ.get('CHROME_PATH', None)
+            print(chromedriver_path)
             options.binary_location = chromedriver_path
             self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
         except:

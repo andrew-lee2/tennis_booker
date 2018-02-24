@@ -1,5 +1,6 @@
 import re
 import pandas as pd
+import pytz
 
 
 class Parser(object):
@@ -23,7 +24,6 @@ class Parser(object):
 
     def _split_message(self):
         # TODO I think we need to break this out into a "main" function
-        # if self.check_format():
         message_parts = self.message.split(' ')
         self.date = message_parts[0]
         self.time = message_parts[1]
@@ -32,9 +32,7 @@ class Parser(object):
 
     def _get_booking_time(self):
         booking_time = self.playing_time - pd.DateOffset(days=2)
-
         self.booking_time = booking_time.replace(hour=8, minute=43)
-        # return self.booking_time
 
     def _book_now(self):
         now = pd.to_datetime('now')
@@ -42,7 +40,11 @@ class Parser(object):
 
     def _get_date(self):
         full_date_str = '{} {} {}'.format(self.date, self.time, self.am_or_pm)
-        self.playing_time = pd.to_datetime(full_date_str)
+        # TODO convert from UTC to central
+        playing_time = pd.to_datetime(full_date_str)
+        playing_time = playing_time.tz_localize('US/Central')
+        playing_time = playing_time.astimezone('UTC')
+        self.playing_time = playing_time.isoformat()
 
     def to_book_now(self):
         if self._check_format():
