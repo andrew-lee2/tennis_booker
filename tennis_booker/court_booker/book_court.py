@@ -1,32 +1,17 @@
-import configparser
-from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import pandas as pd
 import time
-import os
 
 
 class Caswell(object):
-    def __init__(self, booking_day_datetime, singles_or_doubles, username, password):
+    def __init__(self, booking_day_datetime, singles_or_doubles, username, password, driver):
         self.booking_day_datetime = booking_day_datetime
         self.singles_or_doubles = singles_or_doubles
         self.username = username
         self.password = password
         self.driver = None
         self.number_of_courts = 8
-
-    def create_driver(self):
-        try:
-            # FIXME something not happening here
-            options = webdriver.ChromeOptions()
-            options.add_argument('headless')
-            chromedriver_path = os.environ.get('CHROME_PATH', None)
-            print(chromedriver_path)
-            options.binary_location = chromedriver_path
-            self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
-        except:
-            chromedriver = '/Users/andrewlee/Downloads/chromedriver'
-            self.driver = webdriver.Chrome(chromedriver)
+        self.driver = driver
 
     def login_to_caswell(self):
         login_url = 'https://www.10sportal.net/login.html'
@@ -148,19 +133,9 @@ class Caswell(object):
         return court_mapping[court_str]
 
 
-def run_booker(booking_dt, match_type):
-    try:
-        config = configparser.ConfigParser()
-        config.read(os.path.join(os.path.dirname(__file__), r'config.ini'))
-
-        caswell_username = config.get('LOGIN_INFO', 'USERNAME')
-        caswell_password = config.get('LOGIN_INFO', 'PASSWORD')
-    except:
-        caswell_username = os.environ.get('CASWELL_USER', None)
-        caswell_password = os.environ.get('CASWELL_PW', None)
-
-    caswell = Caswell(booking_dt, match_type, caswell_username, caswell_password)
-    caswell.create_driver()
+def run_booker(booking_dt, match_type, username, password, driver):
+    caswell = Caswell(booking_dt, match_type, username, password, driver)
+    # caswell.create_driver()
     caswell.login_to_caswell()
     caswell.go_to_courtsheet()
     caswell.go_to_form()

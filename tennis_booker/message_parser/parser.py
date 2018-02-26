@@ -1,6 +1,5 @@
 import re
 import pandas as pd
-import pytz
 
 
 class Parser(object):
@@ -23,7 +22,6 @@ class Parser(object):
             return False
 
     def _split_message(self):
-        # TODO I think we need to break this out into a "main" function
         message_parts = self.message.split(' ')
         self.date = message_parts[0]
         self.time = message_parts[1]
@@ -31,7 +29,6 @@ class Parser(object):
         self.game_type = message_parts[3]
 
     def _get_booking_dt(self):
-        # TODO this might be the problem
         booking_time = self.playing_time - pd.DateOffset(days=2)
         self.booking_time = booking_time.replace(hour=8, minute=43)
 
@@ -52,11 +49,8 @@ class Parser(object):
         if self._check_format():
             self._split_message()
         else:
-            # this prob isnt good
+            # TODO change this
             return False
-        # else:
-            # we need to return the string here maybe we can just dervive with None
-            # return None
 
         self._get_date()
         self._get_booking_dt()
