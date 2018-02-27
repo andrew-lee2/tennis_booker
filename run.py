@@ -18,7 +18,6 @@ scheduler.start()
 @app.route('/')
 def home():
     now = pd.to_datetime('now')
-    print(now)
     return "{}".format(now)
 
 
@@ -30,19 +29,21 @@ def sms_parse():
     message_parser = Parser(message_body)
     book_now = message_parser.to_book_now()
     booking_dt = message_parser.booking_time
+    print(booking_dt)
     match_type = message_parser.game_type
     playing_time = message_parser.playing_time
     cas_user, cas_pw = get_tennis_creds()
-    chromedriver = get_chromedriver_path()
+    chromedriver_path = get_chromedriver_path()
 
 
     if book_now:
         send_response(message_number, 'Trying to book')
-        run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver)
+        run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver_path)
         response_str = 'Ran for {}'.format(playing_time)
     else:
         if message_parser.booking_time:
-            scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=[playing_time, match_type, cas_user, cas_pw, chromedriver])
+            scheduler.add_job(run_booker, 'date', run_date=booking_dt,
+                              args=[playing_time, match_type, cas_user, cas_pw, chromedriver_path])
             response_str = 'Scheduled to run on {} for {}'.format(booking_dt, playing_time)
         else:
             response_str = 'Error: needs to be in MM/DD/YYYY HH:MM PM/AM singles/doubles format'

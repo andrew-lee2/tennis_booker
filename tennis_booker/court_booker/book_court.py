@@ -43,11 +43,11 @@ class Caswell(object):
             if self.driver.current_url == submit_url_form:
                 break
             else:
-                time.sleep(.25)
+                time.sleep(.15)
 
     def try_to_book(self):
         number_of_tries = self.number_of_courts
-        default_court = 'Crt8'
+        default_court = 'Crt4'
         i = 0
 
         # im sure there's a better way to do below
