@@ -6,6 +6,7 @@ import os
 from tennis_booker.court_booker.book_court import run_booker
 from tennis_booker.message_parser.parser import Parser
 from selenium import webdriver
+import pandas as pd
 
 
 app = Flask(__name__)
@@ -16,7 +17,8 @@ scheduler.start()
 
 @app.route('/')
 def home():
-    return "display_test"
+    now = pd.to_datetime('now')
+    return "{}".format(now)
 
 
 @app.route("/sms", methods=['GET', 'POST'])
@@ -31,6 +33,7 @@ def sms_parse():
     playing_time = message_parser.playing_time
     cas_user, cas_pw = get_tennis_creds()
     chromedriver = get_chromedriver_path()
+
 
     if book_now:
         send_response(message_number, 'Trying to book')
@@ -82,7 +85,7 @@ def get_chromedriver_path():
         options.add_argument('headless')
         chromedriver_path = os.environ.get('CHROME_PATH', None)
         options.binary_location = chromedriver_path
-        return  webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+        return webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
     except:
         chromedriver = '/Users/andrewlee/Downloads/chromedriver'
         return webdriver.Chrome(chromedriver)
