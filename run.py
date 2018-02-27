@@ -18,6 +18,7 @@ scheduler.start()
 @app.route('/')
 def home():
     now = pd.to_datetime('now')
+    print(now)
     return "{}".format(now)
 
 
