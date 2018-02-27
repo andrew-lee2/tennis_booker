@@ -30,7 +30,7 @@ class Parser(object):
 
     def _get_booking_dt(self):
         booking_time = self.playing_time - pd.DateOffset(days=2)
-        self.booking_time = booking_time.replace(hour=8, minute=43)
+        self.booking_time = booking_time.replace(hour=8, minute=44, second=55)
 
     def _get_booking_utc(self):
         booking_time = self.booking_time.tz_localize('US/Central')
@@ -43,6 +43,7 @@ class Parser(object):
 
     def _get_date(self):
         full_date_str = '{} {} {}'.format(self.date, self.time, self.am_or_pm)
+        # ValueError for wrong date
         self.playing_time = pd.to_datetime(full_date_str)
 
     def to_book_now(self):
