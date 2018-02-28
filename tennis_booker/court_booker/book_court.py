@@ -135,9 +135,12 @@ class Caswell(object):
 
 def run_booker(booking_dt, match_type, username, password, driver):
     caswell = Caswell(booking_dt, match_type, username, password, driver)
-    # caswell.create_driver()
+
     caswell.login_to_caswell()
+    print('logged onto caswell')
     caswell.go_to_courtsheet()
+    print('went to courtsheet')
     caswell.go_to_form()
+    print('went to form')
     caswell.try_to_book()
     # TODO need to return a success or failure message
