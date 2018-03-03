@@ -33,14 +33,15 @@ def sms_parse():
     playing_time = message_parser.playing_time
     cas_user, cas_pw = get_tennis_creds()
     chromedriver_path = get_chromedriver_path()
+    twilio_user, twilio_pw = get_twilio_creds()
 
     if book_now:
         send_response(message_number, 'Trying to book')
-        run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver_path)
+        run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver_path,
+                   twilio_user, twilio_pw, message_number)
         response_str = 'Ran for {}'.format(playing_time)
     else:
         if message_parser.booking_time:
-            twilio_user, twilio_pw = get_twilio_creds()
             scheduler.add_job(run_booker, 'date', run_date=booking_dt,
                               args=[playing_time, match_type, cas_user, cas_pw, chromedriver_path,
                                     twilio_user, twilio_pw, message_number])

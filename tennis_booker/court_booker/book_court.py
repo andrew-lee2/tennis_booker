@@ -66,11 +66,14 @@ class Caswell(object):
                 default_court = 'Crt' + str(i)
 
         start_time = self._get_start_time()
+        date_str = self._get_date()
+        time_date_str = '{} {}'.format(date_str, start_time)
+
         if i == number_of_tries:
             print('no courts available')
-            self.response_message = 'No courts avaliable at {}'.format(start_time)
+            self.response_message = 'No courts avaliable at {}'.format(time_date_str)
         else:
-            self.response_message = 'Booked {court} at {time}'.format(court=default_court, time=start_time)
+            self.response_message = 'Booked {court} at {time}'.format(court=default_court, time=time_date_str)
 
         self.driver.quit()
 
