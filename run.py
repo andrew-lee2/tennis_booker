@@ -29,12 +29,10 @@ def sms_parse():
     message_parser = Parser(message_body)
     book_now = message_parser.to_book_now()
     booking_dt = message_parser.booking_time
-    print(booking_dt)
     match_type = message_parser.game_type
     playing_time = message_parser.playing_time
     cas_user, cas_pw = get_tennis_creds()
     chromedriver_path = get_chromedriver_path()
-
 
     if book_now:
         send_response(message_number, 'Trying to book')
@@ -42,8 +40,10 @@ def sms_parse():
         response_str = 'Ran for {}'.format(playing_time)
     else:
         if message_parser.booking_time:
+            twilio_user, twilio_pw = get_twilio_creds()
             scheduler.add_job(run_booker, 'date', run_date=booking_dt,
-                              args=[playing_time, match_type, cas_user, cas_pw, chromedriver_path])
+                              args=[playing_time, match_type, cas_user, cas_pw, chromedriver_path,
+                                    twilio_user, twilio_pw, message_number])
             response_str = 'Scheduled to run on {} for {}'.format(booking_dt, playing_time)
         else:
             response_str = 'Error: needs to be in MM/DD/YYYY HH:MM PM/AM singles/doubles format'
@@ -53,11 +53,16 @@ def sms_parse():
     return "recorded"
 
 
+def get_twilio_creds():
+    twilio_sid = os.environ.get('TWILIO_SID', None)
+    twilio_token_auth = os.environ.get('TWILIO_AUTH', None)
+    return twilio_sid, twilio_token_auth
+
+
 def send_response(return_number, message_response):
     send_back_num = return_number
     # TODO need to cache twilio auth
-    twilio_sid = os.environ.get('TWILIO_SID', None)
-    twilio_token_auth = os.environ.get('TWILIO_AUTH', None)
+    twilio_sid, twilio_token_auth = get_twilio_creds()
     client = Client(twilio_sid, twilio_token_auth)
 
     client.api.account.messages.create(

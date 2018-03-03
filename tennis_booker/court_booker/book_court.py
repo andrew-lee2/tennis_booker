@@ -1,10 +1,12 @@
 from selenium.webdriver.support.ui import Select
+from twilio.rest import Client
 import pandas as pd
 import time
 
 
 class Caswell(object):
-    def __init__(self, booking_day_datetime, singles_or_doubles, username, password, driver):
+    def __init__(self, booking_day_datetime, singles_or_doubles, username,
+                 password, driver, twilio_user=None, twilio_pw=None, return_number=None):
         self.booking_day_datetime = booking_day_datetime
         self.singles_or_doubles = singles_or_doubles
         self.username = username
@@ -12,6 +14,10 @@ class Caswell(object):
         self.driver = None
         self.number_of_courts = 8
         self.driver = driver
+        self.response_message = None
+        self.twilio_user = twilio_user
+        self.twilio_pw = twilio_pw
+        self.return_number = return_number
 
     def login_to_caswell(self):
         login_url = 'https://www.10sportal.net/login.html'
@@ -59,8 +65,12 @@ class Caswell(object):
             else:
                 default_court = 'Crt' + str(i)
 
-            if i == number_of_tries:
-                print('no courts available')
+        start_time = self._get_start_time()
+        if i == number_of_tries:
+            print('no courts available')
+            self.response_message = 'No courts avaliable at {}'.format(start_time)
+        else:
+            self.response_message = 'Booked {court} at {time}'.format(court=default_court, time=start_time)
 
         self.driver.quit()
 
@@ -118,6 +128,14 @@ class Caswell(object):
 
         return (booking_hour - starting_time_offset) * time_increments + booking_minutes / 30
 
+    def send_message(self):
+        client = Client(self.twilio_user, self.twilio_pw)
+
+        client.api.account.messages.create(
+            to=self.return_number,
+            from_="+12349013540",
+            body=self.response_message)
+
     @staticmethod
     def map_court_to_str(court_str):
         court_mapping = {
@@ -133,8 +151,10 @@ class Caswell(object):
         return court_mapping[court_str]
 
 
-def run_booker(booking_dt, match_type, username, password, driver):
-    caswell = Caswell(booking_dt, match_type, username, password, driver)
+def run_booker(booking_dt, match_type, username, password, driver,
+               twilio_user=None, twilio_pw=None, return_number=None):
+    caswell = Caswell(booking_dt, match_type, username, password, driver,
+                      twilio_user, twilio_pw, return_number)
 
     caswell.login_to_caswell()
     print('logged onto caswell')
@@ -143,4 +163,8 @@ def run_booker(booking_dt, match_type, username, password, driver):
     caswell.go_to_form()
     print('went to form')
     caswell.try_to_book()
+
+    if caswell.response_message:
+        caswell.send_message()
+
     # TODO need to return a success or failure message
