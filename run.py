@@ -1,6 +1,7 @@
 # /usr/bin/env python
 from flask import Flask, request
 from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 import os
 from tennis_booker.court_booker.book_court import run_booker
@@ -49,9 +50,12 @@ def sms_parse():
         else:
             response_str = 'Error: needs to be in MM/DD/YYYY HH:MM PM/AM singles/doubles format'
 
-    send_response(message_number, response_str)
+    # TODO i think we should give the response back here
+    resp = MessagingResponse()
+    resp.message(response_str)
+    # send_response(message_number, response_str)
 
-    return "recorded"
+    return str(resp)
 
 
 def get_twilio_creds():
