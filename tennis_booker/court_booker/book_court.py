@@ -53,7 +53,7 @@ class Caswell(object):
 
     def try_to_book(self):
         number_of_tries = self.number_of_courts
-        default_court = 'Crt4'
+        default_court = 'Crt3'
         i = 0
 
         # im sure there's a better way to do below
@@ -168,6 +168,5 @@ def run_booker(booking_dt, match_type, username, password, driver,
     caswell.try_to_book()
 
     if caswell.response_message:
+        print('sending text')
         caswell.send_message()
-
-    # TODO need to return a success or failure message
