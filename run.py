@@ -36,11 +36,11 @@ def sms_parse():
     chromedriver_path = get_chromedriver_path()
     twilio_user, twilio_pw = get_twilio_creds()
 
-    resp = MessagingResponse()
+    # resp = MessagingResponse()
 
     if book_now:
-        # send_response(message_number, 'Trying to book')
-        resp.message('Trying to book')
+        # resp.message('Trying to book')
+        send_response(message_number, 'trying to book')
         run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver_path,
                    twilio_user, twilio_pw, message_number)
         response_str = 'Ran for {}'.format(playing_time)
@@ -54,11 +54,11 @@ def sms_parse():
             response_str = 'Error: needs to be in MM/DD/YYYY HH:MM PM/AM singles/doubles format'
 
     # TODO i think we should give the response back here
+    send_response(message_number, response_str)
+    # resp.message(response_str)
 
-    resp.message(response_str)
-    # send_response(message_number, response_str)
-
-    return str(resp)
+    # return str(resp)
+    return 'finished'
 
 
 def get_twilio_creds():
