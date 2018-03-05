@@ -1,7 +1,6 @@
 # /usr/bin/env python
 from flask import Flask, request
 from twilio.rest import Client
-from twilio.twiml.messaging_response import MessagingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 import os
 from tennis_booker.court_booker.book_court import run_booker
@@ -36,10 +35,7 @@ def sms_parse():
     chromedriver_path = get_chromedriver_path()
     twilio_user, twilio_pw = get_twilio_creds()
 
-    # resp = MessagingResponse()
-
     if book_now:
-        # resp.message('Trying to book')
         send_response(message_number, 'trying to book')
         run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver_path,
                    twilio_user, twilio_pw, message_number)
@@ -53,11 +49,8 @@ def sms_parse():
         else:
             response_str = 'Error: needs to be in MM/DD/YYYY HH:MM PM/AM singles/doubles format'
 
-    # TODO i think we should give the response back here
     send_response(message_number, response_str)
-    # resp.message(response_str)
 
-    # return str(resp)
     return 'finished'
 
 
