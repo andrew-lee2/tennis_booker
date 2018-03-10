@@ -55,12 +55,15 @@ def sms_parse():
         send_response(message_number, 'trying to book')
         # TODO make we just make the scheduler run right now?
         booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=5)
-        booking_dt = booking_dt.astimezone('UTC')
+        # booking_dt = booking_dt.astimezone('UTC')
         # booking_dt = booking_dt.isoformat()
         print('BOOKING_TIME {}'.format(booking_dt))
+        booker_args = [playing_time, match_type, cas_user, cas_pw, chromedriver_path,
+                                twilio_user, twilio_pw, message_number]
+        for arg in booker_args:
+            print(arg)
         scheduler.add_job(run_booker, 'date', run_date=booking_dt,
-                          args=[playing_time, match_type, cas_user, cas_pw, chromedriver_path,
-                                twilio_user, twilio_pw, message_number])
+                          args=booker_args)
         logging.getLogger('apscheduler').setLevel(logging.DEBUG)
         response_str = 'Ran for {}'.format(playing_time)
     else:
