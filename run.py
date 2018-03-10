@@ -7,6 +7,7 @@ from tennis_booker.court_booker.book_court import run_booker
 from tennis_booker.message_parser.parser import Parser
 from selenium import webdriver
 import pandas as pd
+import psycopg2
 
 
 app = Flask(__name__)
@@ -17,8 +18,10 @@ scheduler.start()
 
 @app.route('/')
 def home():
-    now = pd.to_datetime('now')
-    return "{}".format(now)
+    # now = pd.to_datetime('now')
+    url = os.environ['DATABASE_URL']
+    conn = psycopg2.connect(url, sslmode='require')
+    return "{}, {}".format(url, conn)
 
 
 @app.route("/sms", methods=['GET', 'POST'])
@@ -37,6 +40,7 @@ def sms_parse():
 
     if book_now:
         send_response(message_number, 'trying to book')
+        # TODO make we just make the scheduler run right now?
         run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver_path,
                    twilio_user, twilio_pw, message_number)
         response_str = 'Ran for {}'.format(playing_time)
