@@ -28,8 +28,8 @@ def home():
     url = os.environ['DATABASE_URL']
     conn = psycopg2.connect(url, sslmode='require')
     temp = pd.read_sql_query('select * from "apscheduler_jobs"', con=conn)
-    print(temp)
-    return "{}".format(url)
+    # print(temp)
+    return temp
 
 
 @app.route("/sms", methods=['GET', 'POST'])
@@ -49,8 +49,10 @@ def sms_parse():
     if book_now:
         send_response(message_number, 'trying to book')
         # TODO make we just make the scheduler run right now?
-        run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver_path,
-                   twilio_user, twilio_pw, message_number)
+        print(booking_dt)
+        print(type(booking_dt))
+        # run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver_path,
+        #            twilio_user, twilio_pw, message_number)
         response_str = 'Ran for {}'.format(playing_time)
     else:
         if message_parser.booking_time:
