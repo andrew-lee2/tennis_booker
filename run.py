@@ -30,6 +30,7 @@ def home():
     conn = psycopg2.connect(url, sslmode='require')
     temp = pd.read_sql_query('select * from "apscheduler_jobs"', con=conn)
     print(temp)
+    conn.close()
     return '{}'.format(url)
 
 
@@ -53,7 +54,7 @@ def sms_parse():
         booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=5)
         booking_dt = booking_dt.tz_localize('US/Central')
         booking_dt = booking_dt.astimezone('UTC')
-        booking_dt = booking_dt.isoformat()
+        # booking_dt = booking_dt.isoformat()
         print('BOOKING_TIME {}'.format(booking_dt))
         scheduler.add_job(run_booker, 'date', run_date=booking_dt,
                           args=[playing_time, match_type, cas_user, cas_pw, chromedriver_path,
