@@ -2,6 +2,7 @@
 from flask import Flask, request
 from twilio.rest import Client
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 import os
 from tennis_booker.court_booker.book_court import run_booker
 from tennis_booker.message_parser.parser import Parser
@@ -12,7 +13,12 @@ import psycopg2
 
 app = Flask(__name__)
 
-scheduler = BackgroundScheduler()
+postgres_url = os.environ['DATABASE_URL']
+jobstores = {
+    'default': SQLAlchemyJobStore(url=postgres_url)
+}
+
+scheduler = BackgroundScheduler(jobstores=jobstores, tablename='tennis_sched')
 scheduler.start()
 
 
@@ -21,7 +27,9 @@ def home():
     # now = pd.to_datetime('now')
     url = os.environ['DATABASE_URL']
     conn = psycopg2.connect(url, sslmode='require')
-    return "{}, {}".format(url, conn)
+    temp = pd.read_sql_query('select * from "tennis_sched"', con=conn)
+    print(temp)
+    return "{}".format(url)
 
 
 @app.route("/sms", methods=['GET', 'POST'])
