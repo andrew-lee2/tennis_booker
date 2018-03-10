@@ -18,7 +18,7 @@ jobstores = {
     'default': SQLAlchemyJobStore(url=postgres_url)
 }
 
-scheduler = BackgroundScheduler(jobstores=jobstores, tablename='tennis_sched')
+scheduler = BackgroundScheduler(jobstores=jobstores)
 scheduler.start()
 
 
@@ -27,7 +27,7 @@ def home():
     # now = pd.to_datetime('now')
     url = os.environ['DATABASE_URL']
     conn = psycopg2.connect(url, sslmode='require')
-    temp = pd.read_sql_query('select * from "tennis_sched"', con=conn)
+    temp = pd.read_sql_query('select * from "apscheduler_jobs"', con=conn)
     print(temp)
     return "{}".format(url)
 
