@@ -25,6 +25,7 @@ scheduler.start()
 @app.route('/')
 def home():
     # now = pd.to_datetime('now')
+    # TODO could turn this into a parser to return scheds
     url = os.environ['DATABASE_URL']
     conn = psycopg2.connect(url, sslmode='require')
     temp = pd.read_sql_query('select * from "apscheduler_jobs"', con=conn)
@@ -49,10 +50,14 @@ def sms_parse():
     if book_now:
         send_response(message_number, 'trying to book')
         # TODO make we just make the scheduler run right now?
-        print(booking_dt)
-        print(type(booking_dt))
-        # run_booker(playing_time, match_type, cas_user, cas_pw, chromedriver_path,
-        #            twilio_user, twilio_pw, message_number)
+        booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=5)
+        booking_dt = booking_dt.tz_localize('US/Central')
+        booking_dt = booking_dt.astimezone('UTC')
+        booking_dt = booking_dt.isoformat()
+        print('BOOKING_TIME {}'.format(booking_dt))
+        scheduler.add_job(run_booker, 'date', run_date=booking_dt,
+                          args=[playing_time, match_type, cas_user, cas_pw, chromedriver_path,
+                                twilio_user, twilio_pw, message_number])
         response_str = 'Ran for {}'.format(playing_time)
     else:
         if message_parser.booking_time:
