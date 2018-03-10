@@ -28,8 +28,8 @@ def home():
     url = os.environ['DATABASE_URL']
     conn = psycopg2.connect(url, sslmode='require')
     temp = pd.read_sql_query('select * from "apscheduler_jobs"', con=conn)
-    # print(temp)
-    return temp
+    print(temp)
+    return '{}'.format(url)
 
 
 @app.route("/sms", methods=['GET', 'POST'])
