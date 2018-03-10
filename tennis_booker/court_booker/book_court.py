@@ -1,4 +1,5 @@
 from selenium.webdriver.support.ui import Select
+from selenium import webdriver
 from twilio.rest import Client
 import pandas as pd
 import time
@@ -6,18 +7,23 @@ import time
 
 class Caswell(object):
     def __init__(self, booking_day_datetime, singles_or_doubles, username,
-                 password, driver, twilio_user=None, twilio_pw=None, return_number=None):
+                 password, driver_path, twilio_user=None, twilio_pw=None, return_number=None):
         self.booking_day_datetime = booking_day_datetime
         self.singles_or_doubles = singles_or_doubles
         self.username = username
         self.password = password
         self.driver = None
         self.number_of_courts = 8
-        self.driver = driver
+        self.driver_path = driver_path
         self.response_message = None
         self.twilio_user = twilio_user
         self.twilio_pw = twilio_pw
         self.return_number = return_number
+
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        options.binary_location = self.driver_path
+        self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
 
     def login_to_caswell(self):
         login_url = 'https://www.10sportal.net/login.html'

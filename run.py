@@ -6,7 +6,7 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 import os
 from tennis_booker.court_booker.book_court import run_booker
 from tennis_booker.message_parser.parser import Parser
-from selenium import webdriver
+# from selenium import webdriver
 import pandas as pd
 import psycopg2
 import logging
@@ -51,6 +51,9 @@ def sms_parse():
     chromedriver_path = get_chromedriver_path()
     twilio_user, twilio_pw = get_twilio_creds()
 
+    booker_args = [playing_time, match_type, cas_user, cas_pw, chromedriver_path,
+                   twilio_user, twilio_pw, message_number]
+
     if book_now:
         send_response(message_number, 'trying to book')
         # TODO make we just make the scheduler run right now?
@@ -58,19 +61,13 @@ def sms_parse():
         # booking_dt = booking_dt.astimezone('UTC')
         # booking_dt = booking_dt.isoformat()
         print('BOOKING_TIME {}'.format(booking_dt))
-        booker_args = [playing_time, match_type, cas_user, cas_pw, chromedriver_path,
-                                twilio_user, twilio_pw, message_number]
-        for arg in booker_args:
-            print(arg)
-        scheduler.add_job(run_booker, 'date', run_date=booking_dt,
-                          args=booker_args)
+
+        scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
         logging.getLogger('apscheduler').setLevel(logging.DEBUG)
         response_str = 'Ran for {}'.format(playing_time)
     else:
         if message_parser.booking_time:
-            scheduler.add_job(run_booker, 'date', run_date=booking_dt,
-                              args=[playing_time, match_type, cas_user, cas_pw, chromedriver_path,
-                                    twilio_user, twilio_pw, message_number])
+            scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
             response_str = 'Scheduled to run on {} for {}'.format(booking_dt, playing_time)
         else:
             response_str = 'Error: needs to be in MM/DD/YYYY HH:MM PM/AM singles/doubles format'
@@ -115,14 +112,15 @@ def get_tennis_creds():
 
 def get_chromedriver_path():
     try:
-        options = webdriver.ChromeOptions()
-        options.add_argument('headless')
-        chromedriver_path = os.environ.get('CHROME_PATH', None)
-        options.binary_location = chromedriver_path
-        return webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+        # options = webdriver.ChromeOptions()
+        # options.add_argument('headless')
+        # chromedriver_path = os.environ.get('CHROME_PATH', None)
+        # options.binary_location = chromedriver_path
+        # return webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+        return os.environ.get('CHROME_PATH', None)
     except:
-        chromedriver = '/Users/andrewlee/Downloads/chromedriver'
-        return webdriver.Chrome(chromedriver)
+        return '/Users/andrewlee/Downloads/chromedriver'
+
 
 
 if __name__ == "__main__":
