@@ -6,7 +6,6 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 import os
 from tennis_booker.court_booker.book_court import run_booker
 from tennis_booker.message_parser.parser import Parser
-# from selenium import webdriver
 import pandas as pd
 import psycopg2
 import logging
@@ -56,11 +55,15 @@ def sms_parse():
 
     if book_now:
         send_response(message_number, 'trying to book')
-        # TODO make we just make the scheduler run right now?
+        #FIXME check on this timezone
         booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=5)
         # booking_dt = booking_dt.astimezone('UTC')
         # booking_dt = booking_dt.isoformat()
         print('BOOKING_TIME {}'.format(booking_dt))
+        print(type(booking_dt))
+        test = pd.to_datetime(booking_dt)
+        print('{} {}'.format(test, type(test)))
+        # test datetime.now(utc) - run_time i think i need a datetime not a timestamp?
 
         scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
         logging.getLogger('apscheduler').setLevel(logging.DEBUG)
