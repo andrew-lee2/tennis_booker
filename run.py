@@ -64,7 +64,7 @@ def sms_parse():
         response_str = 'Ran for {}'.format(playing_time)
     else:
         if message_parser.booking_time:
-            booking_dt = booking_dt.to_pydatetime()
+            booking_dt = pd.to_datetime(booking_dt)
             scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
             response_str = 'Scheduled to run on {} for {}'.format(booking_dt, playing_time)
         else:
