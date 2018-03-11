@@ -59,6 +59,7 @@ def sms_parse():
         booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=5)
         # booking_dt = booking_dt.astimezone('UTC')
         # booking_dt = booking_dt.isoformat()
+        booking_dt = booking_dt.to_pydatetime()
         print('BOOKING_TIME {}'.format(booking_dt))
         print(type(booking_dt))
         test = pd.to_datetime(booking_dt)
