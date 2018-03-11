@@ -26,12 +26,11 @@ scheduler.start()
 
 @app.route('/')
 def home():
-    # now = pd.to_datetime('now')
     # TODO could turn this into a parser to return scheds
     url = os.environ['DATABASE_URL']
     conn = psycopg2.connect(url, sslmode='require')
-    temp = pd.read_sql_query('select * from "apscheduler_jobs"', con=conn)
-    print(temp)
+    all_scheds_query = pd.read_sql_query('select * from "apscheduler_jobs"', con=conn)
+    print(all_scheds_query)
     conn.close()
     return '{}'.format(url)
 
@@ -61,7 +60,6 @@ def sms_parse():
 
         scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
         logging.getLogger('apscheduler').setLevel(logging.DEBUG)
-        response_str = 'Ran for {}'.format(playing_time)
     else:
         if message_parser.booking_time:
             booking_dt = pd.to_datetime(booking_dt)
@@ -110,15 +108,9 @@ def get_tennis_creds():
 
 def get_chromedriver_path():
     try:
-        # options = webdriver.ChromeOptions()
-        # options.add_argument('headless')
-        # chromedriver_path = os.environ.get('CHROME_PATH', None)
-        # options.binary_location = chromedriver_path
-        # return webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
         return os.environ.get('CHROME_PATH', None)
     except:
         return '/Users/andrewlee/Downloads/chromedriver'
-
 
 
 if __name__ == "__main__":
