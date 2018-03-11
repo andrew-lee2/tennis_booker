@@ -55,22 +55,16 @@ def sms_parse():
 
     if book_now:
         send_response(message_number, 'trying to book')
-        #FIXME check on this timezone
+
         booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=5)
-        # booking_dt = booking_dt.astimezone('UTC')
-        # booking_dt = booking_dt.isoformat()
         booking_dt = booking_dt.to_pydatetime()
-        print('BOOKING_TIME {}'.format(booking_dt))
-        print(type(booking_dt))
-        test = pd.to_datetime(booking_dt)
-        print('{} {}'.format(test, type(test)))
-        # test datetime.now(utc) - run_time i think i need a datetime not a timestamp?
 
         scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
         logging.getLogger('apscheduler').setLevel(logging.DEBUG)
         response_str = 'Ran for {}'.format(playing_time)
     else:
         if message_parser.booking_time:
+            booking_dt = booking_dt.to_pydatetime()
             scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
             response_str = 'Scheduled to run on {} for {}'.format(booking_dt, playing_time)
         else:
