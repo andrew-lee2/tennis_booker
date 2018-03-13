@@ -63,10 +63,8 @@ def sms_parse():
     else:
         if message_parser.booking_time:
             booking_dt = pd.to_datetime(booking_dt)
-            print(type(booking_dt))
             booking_dt = booking_dt.to_pydatetime()
-            print(type(booking_dt))
-            # FIXME something here is not correct with the time type
+
             scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
             response_str = 'Scheduled to run on {} for {}'.format(booking_dt, playing_time)
         else:
