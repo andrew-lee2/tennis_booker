@@ -112,7 +112,7 @@ def get_chromedriver_path():
     try:
         return os.environ.get('CHROME_PATH', None)
     except:
-        return '/Users/andrewlee/Downloads/chromedriver'
+        return '/home/andrew/Downloads/chromedriver'
 
 
 if __name__ == "__main__":

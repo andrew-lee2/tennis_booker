@@ -2,3 +2,4 @@
 .idea/
 venv/
 geckodriver.log
+tennis_venv/
