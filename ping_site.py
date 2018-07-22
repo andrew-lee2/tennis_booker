@@ -1,3 +1,5 @@
 import requests
+import os
 
-r = requests.get("https://fathomless-inlet-22498.herokuapp.com/")
+home_url = os.environ('APP_URL')
+r = requests.get(home_url)

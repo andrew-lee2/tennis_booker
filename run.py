@@ -27,12 +27,11 @@ scheduler.start()
 @app.route('/')
 def home():
     # TODO could turn this into a parser to return scheds
-    url = os.environ['DATABASE_URL']
-    conn = psycopg2.connect(url, sslmode='require')
+    conn = psycopg2.connect(postgres_url, sslmode='require')
     all_scheds_query = pd.read_sql_query('select * from "apscheduler_jobs"', con=conn)
     print(all_scheds_query)
     conn.close()
-    return '{}'.format(url)
+    return '{}'.format(postgres_url)
 
 
 @app.route("/sms", methods=['GET', 'POST'])
