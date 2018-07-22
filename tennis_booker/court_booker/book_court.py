@@ -13,7 +13,7 @@ class Caswell(object):
         self.username = username
         self.password = password
         self.driver = None
-        self.number_of_courts = 8
+        self.court_booking_order = ['Crt3', 'Crt2', 'Crt4', 'Crt1', 'Crt8', 'Crt7', 'Crt5', 'Crt6']
         self.driver_path = driver_path
         self.response_message = None
         self.twilio_user = twilio_user
@@ -35,6 +35,7 @@ class Caswell(object):
         login_xpath = '//*[@id="form-login"]/button'
 
         self.driver.find_element_by_xpath(login_xpath).click()
+        print('logged onto caswell')
 
     def _get_courtsheet_url(self):
         booking_date = self._get_date()
@@ -44,6 +45,7 @@ class Caswell(object):
     def go_to_courtsheet(self):
         courtsheet_url = self._get_courtsheet_url()
         self.driver.get(courtsheet_url)
+        print('went to courtsheet')
 
     def go_to_form(self):
         max_tries = 110
@@ -53,35 +55,36 @@ class Caswell(object):
             i += 1
             self.driver.get(submit_url_form)
             if self.driver.current_url == submit_url_form:
+                print('went to form')
                 break
             else:
                 time.sleep(.15)
 
     def try_to_book(self):
-        number_of_tries = self.number_of_courts
-        default_court = 'Crt3'
-        i = 0
+        court_found = False
+        court_str = None
 
-        # im sure there's a better way to do below
-        while i < number_of_tries:
-            i += 1
-            self._fill_out_form_and_submit(default_court)
+        for court_str in self.court_booking_order:
+            self._fill_out_form_and_submit(court_str)
             if self.driver.current_url == self._get_courtsheet_url() + '&objStart=1':
+                court_found = True
                 break
-            else:
-                default_court = 'Crt' + str(i)
 
         start_time = self._get_start_time()
         date_str = self._get_date()
         time_date_str = '{} {}'.format(date_str, start_time)
 
-        if i == number_of_tries:
-            print('no courts available')
-            self.response_message = 'No courts avaliable at {}'.format(time_date_str)
+        if court_found:
+            booked_message = 'Booked {court} at {time}'.format(court=court_str, time=time_date_str)
+            self.response_message = booked_message
+            print(booked_message)
         else:
-            self.response_message = 'Booked {court} at {time}'.format(court=default_court, time=time_date_str)
+            no_court_message = 'No courts avaliable at {}'.format(time_date_str)
+            self.response_message = no_court_message
+            print(no_court_message)
 
         self.driver.quit()
+        print('finished trying to book')
 
     def _get_singles_doubles_value(self):
         # value "2" = doubles; value "1" = singles
@@ -111,6 +114,7 @@ class Caswell(object):
         select.select_by_value(court_number)
 
         self.driver.find_element_by_name("submit").click()
+        print("filled out form for {}".format(court_str))
 
     def _close_driver(self):
         self.driver.close()
@@ -145,6 +149,8 @@ class Caswell(object):
             from_="+12349013540",
             body=self.response_message)
 
+        print('sending text - {}'.format(self.response_message))
+
     @staticmethod
     def map_court_to_str(court_str):
         court_mapping = {
@@ -166,13 +172,11 @@ def run_booker(booking_dt, match_type, username, password, driver,
                       twilio_user, twilio_pw, return_number)
 
     caswell.login_to_caswell()
-    print('logged onto caswell')
     caswell.go_to_courtsheet()
-    print('went to courtsheet')
     caswell.go_to_form()
-    print('went to form')
     caswell.try_to_book()
 
     if caswell.response_message:
-        print('sending text')
         caswell.send_message()
+
+    print('finished run_booker')

@@ -30,6 +30,7 @@ class Parser(object):
 
     def _get_booking_dt(self):
         booking_time = self.playing_time - pd.DateOffset(days=2)
+        # FIXME move this earlier maybe
         self.booking_time = booking_time.replace(hour=8, minute=44, second=59)
 
     def _get_booking_utc(self):
@@ -47,6 +48,7 @@ class Parser(object):
         self.playing_time = pd.to_datetime(full_date_str)
 
     def to_book_now(self):
+        # TODO i think changing the response to this would be better
         if self._check_format():
             self._split_message()
         else:

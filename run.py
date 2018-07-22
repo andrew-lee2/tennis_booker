@@ -39,6 +39,7 @@ def sms_parse():
     message_number = request.form['From']
     message_body = request.form['Body']
 
+    response_str = ''
     message_parser = Parser(message_body)
     book_now = message_parser.to_book_now()
     booking_dt = message_parser.booking_time
