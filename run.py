@@ -1,6 +1,7 @@
 # /usr/bin/env python
 from flask import Flask, request
 from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 import os
@@ -39,7 +40,12 @@ def sms_parse():
     message_number = request.form['From']
     message_body = request.form['Body']
 
-    response_str = ''
+    throwaway_message = 'Test'
+    resp = MessagingResponse()
+    resp.message(throwaway_message)
+
+    # FIXME i think there needs to be a message here
+    response_str = 'Canned Message'
     message_parser = Parser(message_body)
     book_now = message_parser.to_book_now()
     booking_dt = message_parser.booking_time
