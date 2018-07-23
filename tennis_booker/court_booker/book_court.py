@@ -1,8 +1,9 @@
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
-from twilio.rest import Client
+# from twilio.rest import Client
 import pandas as pd
 import time
+from run import send_response
 
 
 class Caswell(object):
@@ -35,12 +36,15 @@ class Caswell(object):
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
         options.binary_location = self.driver_path
+        i = 0
 
-        while num_tries > 0:
+        while i < num_tries:
             try:
                 chrome_driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+                print('Got chrome webdriver')
             except:
-                num_tries -= 1
+                i += 1
+                print('Retry number {}'.format(str(i)))
 
         return chrome_driver
 
@@ -160,15 +164,15 @@ class Caswell(object):
 
         return (booking_hour - starting_time_offset) * time_increments + booking_minutes / 30
 
-    def send_message(self):
-        client = Client(self.twilio_user, self.twilio_pw)
-
-        client.api.account.messages.create(
-            to=self.return_number,
-            from_="+12349013540",
-            body=self.response_message)
-
-        print('sending text - {}'.format(self.response_message))
+    # def send_message(self):
+    #     client = Client(self.twilio_user, self.twilio_pw)
+    #
+    #     client.api.account.messages.create(
+    #         to=self.return_number,
+    #         from_="+12349013540",
+    #         body=self.response_message)
+    #
+    #     print('sending text - {}'.format(self.response_message))
 
     @staticmethod
     def map_court_to_str(court_str):
@@ -197,6 +201,6 @@ def run_booker(booking_dt, match_type, username, password, driver,
     caswell.try_to_book()
 
     if caswell.response_message:
-        caswell.send_message()
+        send_response(caswell.return_number, caswell.response_message)
 
     print('finished run_booker')

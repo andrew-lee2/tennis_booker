@@ -98,6 +98,8 @@ def send_response(return_number, message_response):
         from_="+12349013540",
         body=message_response)
 
+    print('sending text - {}'.format(message_response))
+
 
 def get_tennis_creds():
     try:
