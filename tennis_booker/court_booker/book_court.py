@@ -42,6 +42,7 @@ class Caswell(object):
             try:
                 chrome_driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
                 print('Got chrome webdriver')
+                break
             except:
                 i += 1
                 print('Retry number {}'.format(str(i)))
