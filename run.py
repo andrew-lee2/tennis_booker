@@ -7,6 +7,7 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 import os
 from tennis_booker.court_booker.book_court import run_booker
 from tennis_booker.message_parser.parser import Parser
+from tennis_booker.message_parser.send_message import send_response, get_twilio_creds
 import pandas as pd
 import psycopg2
 import logging
@@ -81,24 +82,24 @@ def sms_parse():
     return 'finished'
 
 
-def get_twilio_creds():
-    twilio_sid = os.environ.get('TWILIO_SID', None)
-    twilio_token_auth = os.environ.get('TWILIO_AUTH', None)
-    return twilio_sid, twilio_token_auth
+# def get_twilio_creds():
+#     twilio_sid = os.environ.get('TWILIO_SID', None)
+#     twilio_token_auth = os.environ.get('TWILIO_AUTH', None)
+#     return twilio_sid, twilio_token_auth
 
 
-def send_response(return_number, message_response):
-    send_back_num = return_number
-    # TODO need to cache twilio auth
-    twilio_sid, twilio_token_auth = get_twilio_creds()
-    client = Client(twilio_sid, twilio_token_auth)
-
-    client.api.account.messages.create(
-        to=send_back_num,
-        from_="+12349013540",
-        body=message_response)
-
-    print('sending text - {}'.format(message_response))
+# def send_response(return_number, message_response):
+#     send_back_num = return_number
+#     # TODO need to cache twilio auth
+#     twilio_sid, twilio_token_auth = get_twilio_creds()
+#     client = Client(twilio_sid, twilio_token_auth)
+#
+#     client.api.account.messages.create(
+#         to=send_back_num,
+#         from_="+12349013540",
+#         body=message_response)
+#
+#     print('sending text - {}'.format(message_response))
 
 
 def get_tennis_creds():

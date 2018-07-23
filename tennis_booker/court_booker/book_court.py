@@ -3,7 +3,7 @@ from selenium import webdriver
 # from twilio.rest import Client
 import pandas as pd
 import time
-from run import send_response
+from tennis_booker.message_parser.send_message import send_response
 
 
 class Caswell(object):
