@@ -23,7 +23,11 @@ class Caswell(object):
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
         options.binary_location = self.driver_path
-        self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+        try:
+            self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+        except:
+            time.sleep(2)
+            self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
 
     def login_to_caswell(self):
         login_url = 'https://www.10sportal.net/login.html'

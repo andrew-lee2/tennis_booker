@@ -40,11 +40,11 @@ def sms_parse():
     message_number = request.form['From']
     message_body = request.form['Body']
 
-    throwaway_message = 'Test'
+    # throwaway_message = 'Test'
     resp = MessagingResponse()
-    resp.message(throwaway_message)
+    # resp.message(throwaway_message)
+    resp.redirect(os.environ['APP_URL'])
 
-    # FIXME i think there needs to be a message here
     response_str = 'Canned Message'
     message_parser = Parser(message_body)
     book_now = message_parser.to_book_now()
@@ -61,7 +61,7 @@ def sms_parse():
     if book_now:
         send_response(message_number, 'trying to book')
 
-        booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=5)
+        booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=8)
         booking_dt = booking_dt.to_pydatetime()
 
         scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
