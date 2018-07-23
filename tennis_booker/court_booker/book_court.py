@@ -20,14 +20,29 @@ class Caswell(object):
         self.twilio_pw = twilio_pw
         self.return_number = return_number
 
+        # options = webdriver.ChromeOptions()
+        # options.add_argument('headless')
+        # options.binary_location = self.driver_path
+        # try:
+        #     self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+        # except:
+        #     # FIXME fix this
+        #     time.sleep(2)
+        #     self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+
+    def initialize_webdriver(self, num_tries=5):
+        chrome_driver = None
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
         options.binary_location = self.driver_path
-        try:
-            self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
-        except:
-            time.sleep(2)
-            self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+
+        while num_tries > 0:
+            try:
+                chrome_driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
+            except:
+                num_tries -= 1
+
+        return chrome_driver
 
     def login_to_caswell(self):
         login_url = 'https://www.10sportal.net/login.html'
@@ -175,6 +190,7 @@ def run_booker(booking_dt, match_type, username, password, driver,
     caswell = Caswell(booking_dt, match_type, username, password, driver,
                       twilio_user, twilio_pw, return_number)
 
+    caswell.driver = caswell.initialize_webdriver()
     caswell.login_to_caswell()
     caswell.go_to_courtsheet()
     caswell.go_to_form()
