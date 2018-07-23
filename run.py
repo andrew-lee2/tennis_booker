@@ -45,7 +45,7 @@ def sms_parse():
     # resp.message(throwaway_message)
     resp.redirect(os.environ['APP_URL'])
 
-    response_str = 'Canned Message'
+    response_str = None
     message_parser = Parser(message_body)
     book_now = message_parser.to_book_now()
     booking_dt = message_parser.booking_time
