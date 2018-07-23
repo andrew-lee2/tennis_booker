@@ -41,11 +41,6 @@ def sms_parse():
     message_number = request.form['From']
     message_body = request.form['Body']
 
-    # throwaway_message = 'Test'
-    resp = MessagingResponse()
-    # resp.message(throwaway_message)
-    resp.redirect(os.environ['APP_URL'])
-
     response_str = None
     message_parser = Parser(message_body)
     book_now = message_parser.to_book_now()
@@ -59,9 +54,13 @@ def sms_parse():
     booker_args = [playing_time, match_type, cas_user, cas_pw, chromedriver_path,
                    twilio_user, twilio_pw, message_number]
 
+    resp = MessagingResponse()
     if book_now:
-        send_response(message_number, 'trying to book')
+        resp.message('trying to book')
+    else:
+        resp.redirect(os.environ['APP_URL'])
 
+    if book_now:
         booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=8)
         booking_dt = booking_dt.to_pydatetime()
 
@@ -80,26 +79,6 @@ def sms_parse():
     send_response(message_number, response_str)
 
     return 'finished'
-
-
-# def get_twilio_creds():
-#     twilio_sid = os.environ.get('TWILIO_SID', None)
-#     twilio_token_auth = os.environ.get('TWILIO_AUTH', None)
-#     return twilio_sid, twilio_token_auth
-
-
-# def send_response(return_number, message_response):
-#     send_back_num = return_number
-#     # TODO need to cache twilio auth
-#     twilio_sid, twilio_token_auth = get_twilio_creds()
-#     client = Client(twilio_sid, twilio_token_auth)
-#
-#     client.api.account.messages.create(
-#         to=send_back_num,
-#         from_="+12349013540",
-#         body=message_response)
-#
-#     print('sending text - {}'.format(message_response))
 
 
 def get_tennis_creds():

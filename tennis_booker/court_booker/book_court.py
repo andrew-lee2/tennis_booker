@@ -1,6 +1,5 @@
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
-# from twilio.rest import Client
 import pandas as pd
 import time
 from tennis_booker.message_parser.send_message import send_response
@@ -20,16 +19,6 @@ class Caswell(object):
         self.twilio_user = twilio_user
         self.twilio_pw = twilio_pw
         self.return_number = return_number
-
-        # options = webdriver.ChromeOptions()
-        # options.add_argument('headless')
-        # options.binary_location = self.driver_path
-        # try:
-        #     self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
-        # except:
-        #     # FIXME fix this
-        #     time.sleep(2)
-        #     self.driver = webdriver.Chrome(executable_path="chromedriver", chrome_options=options)
 
     def initialize_webdriver(self, num_tries=5):
         chrome_driver = None
@@ -72,7 +61,7 @@ class Caswell(object):
         print('went to courtsheet')
 
     def go_to_form(self):
-        max_tries = 110
+        max_tries = 120
         submit_url_form = 'https://www.10sportal.net/entity/scheduler/index.html'
         i = 0
         while i < max_tries:
@@ -82,7 +71,9 @@ class Caswell(object):
                 print('went to form')
                 break
             else:
-                time.sleep(.15)
+                if i % 5 == 0:
+                    print('{} try to go to form'.format(i))
+                time.sleep(.10)
 
     def try_to_book(self):
         court_found = False
@@ -164,16 +155,6 @@ class Caswell(object):
         time_increments = 2
 
         return (booking_hour - starting_time_offset) * time_increments + booking_minutes / 30
-
-    # def send_message(self):
-    #     client = Client(self.twilio_user, self.twilio_pw)
-    #
-    #     client.api.account.messages.create(
-    #         to=self.return_number,
-    #         from_="+12349013540",
-    #         body=self.response_message)
-    #
-    #     print('sending text - {}'.format(self.response_message))
 
     @staticmethod
     def map_court_to_str(court_str):
