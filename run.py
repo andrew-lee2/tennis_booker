@@ -1,6 +1,5 @@
 # /usr/bin/env python
 from flask import Flask, request
-from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
@@ -44,6 +43,13 @@ def sms_parse():
     response_str = None
     message_parser = Parser(message_body)
     book_now = message_parser.to_book_now()
+
+    resp = MessagingResponse()
+    if book_now:
+        resp.message('trying to book')
+    else:
+        resp.redirect(os.environ['APP_URL'])
+
     booking_dt = message_parser.booking_time
     match_type = message_parser.game_type
     playing_time = message_parser.playing_time
@@ -53,12 +59,6 @@ def sms_parse():
 
     booker_args = [playing_time, match_type, cas_user, cas_pw, chromedriver_path,
                    twilio_user, twilio_pw, message_number]
-
-    resp = MessagingResponse()
-    if book_now:
-        resp.message('trying to book')
-    else:
-        resp.redirect(os.environ['APP_URL'])
 
     if book_now:
         booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=8)
