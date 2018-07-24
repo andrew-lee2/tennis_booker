@@ -46,10 +46,9 @@ def sms_parse():
     book_now = message_parser.to_book_now()
 
     if book_now:
-        resp.message('trying to book')
-    else:
-        resp.redirect(os.environ['APP_URL'])
+        send_response(message_number, 'trying to book')
 
+    resp.redirect(os.environ['APP_URL'])
     booking_dt = message_parser.booking_time
     match_type = message_parser.game_type
     playing_time = message_parser.playing_time
@@ -76,7 +75,8 @@ def sms_parse():
         else:
             response_str = 'Error: needs to be in MM/DD/YYYY HH:MM PM/AM singles/doubles format'
 
-    send_response(message_number, response_str)
+    if response_str:
+        send_response(message_number, response_str)
 
     return 'finished'
 
