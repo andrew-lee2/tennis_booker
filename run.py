@@ -37,6 +37,7 @@ def home():
 
 @app.route("/sms", methods=['GET', 'POST'])
 def sms_parse():
+    resp = MessagingResponse()
     message_number = request.form['From']
     message_body = request.form['Body']
 
@@ -44,7 +45,6 @@ def sms_parse():
     message_parser = Parser(message_body)
     book_now = message_parser.to_book_now()
 
-    resp = MessagingResponse()
     if book_now:
         resp.message('trying to book')
     else:
