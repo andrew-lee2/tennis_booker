@@ -34,7 +34,7 @@ class Caswell(object):
                 break
             except:
                 i += 1
-                print('Retry number {}'.format(str(i)))
+                print('Retry chromedriver number {}'.format(str(i)))
 
         return chrome_driver
 
@@ -72,7 +72,7 @@ class Caswell(object):
                 break
             else:
                 if i % 5 == 0:
-                    print('{} try to go to form'.format(i))
+                    print('{} try to go to form, {}'.format(i, self.driver.current_url))
                 time.sleep(.10)
 
     def try_to_book(self):
@@ -80,6 +80,7 @@ class Caswell(object):
         court_str = None
 
         for court_str in self.court_booking_order:
+            print('Current url: {}'.format(self.driver.current_url))
             self._fill_out_form_and_submit(court_str)
             if self.driver.current_url == self._get_courtsheet_url() + '&objStart=1':
                 court_found = True
