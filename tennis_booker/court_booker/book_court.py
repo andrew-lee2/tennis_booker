@@ -13,7 +13,7 @@ class Caswell(object):
         self.username = username
         self.password = password
         self.driver = None
-        self.court_booking_order = ['Crt3', 'Crt2', 'Crt4', 'Crt1', 'Crt8', 'Crt7', 'Crt5', 'Crt6']
+        self.court_booking_order = ['Crt4', 'Crt2', 'Crt3', 'Crt1', 'Crt8', 'Crt7', 'Crt5', 'Crt6']
         self.driver_path = driver_path
         self.response_message = None
         self.twilio_user = twilio_user
