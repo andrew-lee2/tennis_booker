@@ -38,7 +38,7 @@ def home():
 @app.route("/sms", methods=['GET', 'POST'])
 def sms_parse():
     resp = MessagingResponse()
-    resp.message('Message received')
+    resp.message("Message received")
 
     message_number = request.form['From']
     message_body = request.form['Body']
