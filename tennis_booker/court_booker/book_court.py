@@ -196,9 +196,9 @@ class Caswell(object):
 
 
 def run_booker(booking_dt, match_type, username, password, driver,
-               twilio_user=None, twilio_pw=None, return_number=None):
+               twilio_user=None, twilio_pw=None, return_number=None, book_now=False):
     caswell = Caswell(booking_dt, match_type, username, password, driver,
-                      twilio_user, twilio_pw, return_number)
+                      twilio_user, twilio_pw, return_number, book_now)
 
     caswell.driver = caswell.initialize_webdriver()
     caswell.login_to_caswell()
