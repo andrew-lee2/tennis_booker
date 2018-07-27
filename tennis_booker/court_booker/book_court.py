@@ -20,6 +20,8 @@ class Caswell(object):
         self.twilio_pw = twilio_pw
         self.return_number = return_number
 
+        print(self.booking_day_datetime)
+
     def initialize_webdriver(self, num_tries=5):
         chrome_driver = None
         options = webdriver.ChromeOptions()
@@ -129,6 +131,7 @@ class Caswell(object):
         court_number = Caswell.map_court_to_str(court_str)
         select.select_by_value(court_number)
 
+        # TODO need some kind of time check to submit here
         self.driver.find_element_by_name("submit").click()
         print("filled out form for {}".format(court_str))
 
