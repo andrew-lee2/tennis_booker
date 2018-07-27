@@ -46,7 +46,8 @@ def sms_parse():
     book_now = message_parser.to_book_now()
 
     if book_now:
-        send_response(message_number, 'trying to book')
+        # send_response(message_number, 'trying to book')
+        resp.message('trying to book')
 
     resp.redirect(os.environ['APP_URL'])
     booking_dt = message_parser.booking_time
@@ -71,7 +72,8 @@ def sms_parse():
             booking_dt = booking_dt.to_pydatetime()
 
             scheduler.add_job(run_booker, 'date', run_date=booking_dt, args=booker_args)
-            response_str = 'Scheduled to run on {} for {}'.format(booking_dt, playing_time)
+            # response_str = 'Scheduled to run on {} for {}'.format(booking_dt, playing_time)
+            resp.message('Scheduled to run on {} for {}'.format(booking_dt, playing_time))
         else:
             response_str = 'Error: needs to be in MM/DD/YYYY HH:MM PM/AM singles/doubles format'
 
