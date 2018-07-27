@@ -57,7 +57,7 @@ def sms_parse():
     twilio_user, twilio_pw = get_twilio_creds()
 
     booker_args = [playing_time, match_type, cas_user, cas_pw, chromedriver_path,
-                   twilio_user, twilio_pw, message_number]
+                   twilio_user, twilio_pw, message_number, book_now]
 
     if book_now:
         booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=8)

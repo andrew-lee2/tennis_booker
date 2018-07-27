@@ -7,7 +7,7 @@ from tennis_booker.message_parser.send_message import send_response
 
 class Caswell(object):
     def __init__(self, booking_day_datetime, singles_or_doubles, username,
-                 password, driver_path, twilio_user=None, twilio_pw=None, return_number=None):
+                 password, driver_path, twilio_user=None, twilio_pw=None, return_number=None, book_now=False):
         self.booking_day_datetime = booking_day_datetime
         self.singles_or_doubles = singles_or_doubles
         self.username = username
@@ -19,8 +19,7 @@ class Caswell(object):
         self.twilio_user = twilio_user
         self.twilio_pw = twilio_pw
         self.return_number = return_number
-
-        print(self.booking_day_datetime)
+        self.book_now = book_now
 
     def initialize_webdriver(self, num_tries=5):
         chrome_driver = None
@@ -132,8 +131,29 @@ class Caswell(object):
         select.select_by_value(court_number)
 
         # TODO need some kind of time check to submit here
-        self.driver.find_element_by_name("submit").click()
+        if self.book_now:
+            self.driver.find_element_by_name("submit").click()
+        else:
+            self._to_click_now()
         print("filled out form for {}".format(court_str))
+
+    def _to_click_now(self):
+        limit = 500
+        target_minute = 45
+        i = 0
+
+        while i < limit:
+            current_minute = pd.to_datetime('now').minute
+            if current_minute >= target_minute:
+                self.driver.find_element_by_name("submit").click()
+                return True
+            else:
+                time.sleep(.01)
+                i += 1
+                if i % 5 == 0:
+                    print('current minute is {}'.format(current_minute))
+
+        return False
 
     def _close_driver(self):
         self.driver.close()
