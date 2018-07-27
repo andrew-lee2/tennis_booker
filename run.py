@@ -47,7 +47,7 @@ def sms_parse():
 
     if book_now:
         # send_response(message_number, 'trying to book')
-        resp.message('trying to book')
+        resp.message('Trying to book')
 
     resp.redirect(os.environ['APP_URL'])
     booking_dt = message_parser.booking_time
