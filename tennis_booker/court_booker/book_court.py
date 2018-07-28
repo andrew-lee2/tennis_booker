@@ -138,7 +138,7 @@ class Caswell(object):
         print("filled out form for {}".format(court_str))
 
     def _to_click_now(self):
-        limit = 500
+        limit = 1500
         target_minute = 45
         i = 0
 
@@ -146,13 +146,15 @@ class Caswell(object):
             current_minute = pd.to_datetime('now').minute
             if current_minute >= target_minute:
                 self.driver.find_element_by_name("submit").click()
+                print('Clicked')
                 return True
             else:
-                time.sleep(.01)
+                time.sleep(.1)
                 i += 1
                 if i % 5 == 0:
                     print('current minute is {}'.format(current_minute))
 
+        print('Did not click')
         return False
 
     def _close_driver(self):
