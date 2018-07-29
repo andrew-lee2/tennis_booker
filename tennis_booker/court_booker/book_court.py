@@ -138,13 +138,18 @@ class Caswell(object):
         print("filled out form for {}".format(court_str))
 
     def _to_click_now(self):
+        # Their server is not synced the same as heroku's seems to be ~ 8 sec behind
         limit = 1500
+        target_hour = 8
         target_minute = 45
+        target_second = 8
+        target_timestamp = pd.to_datetime('today').replace(hour=target_hour, minute=target_minute, second=target_second)
+
         i = 0
 
         while i < limit:
-            current_minute = pd.to_datetime('now').minute
-            if current_minute >= target_minute:
+            current_time = pd.to_datetime('now')
+            if current_time >= target_timestamp:
                 self.driver.find_element_by_name("submit").click()
                 print('Clicked')
                 return True
@@ -152,7 +157,7 @@ class Caswell(object):
                 time.sleep(.1)
                 i += 1
                 if i % 5 == 0:
-                    print('current minute is {}'.format(current_minute))
+                    print('current minute is {}'.format(current_time))
 
         print('Did not click')
         return False
