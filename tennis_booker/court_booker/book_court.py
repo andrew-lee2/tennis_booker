@@ -132,6 +132,7 @@ class Caswell(object):
 
         # TODO need some kind of time check to submit here
         if self.book_now:
+            print(pd.to_datetime('now'))
             self.driver.find_element_by_name("submit").click()
         else:
             self._to_click_now()
