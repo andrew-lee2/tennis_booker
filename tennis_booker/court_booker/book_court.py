@@ -1,6 +1,7 @@
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 import pandas as pd
+import pytz
 import time
 from tennis_booker.message_parser.send_message import send_response
 
@@ -130,9 +131,7 @@ class Caswell(object):
         court_number = Caswell.map_court_to_str(court_str)
         select.select_by_value(court_number)
 
-        # TODO need some kind of time check to submit here
         if self.book_now:
-            print(pd.to_datetime('now'))
             self.driver.find_element_by_name("submit").click()
         else:
             self._to_click_now()
@@ -145,11 +144,11 @@ class Caswell(object):
         target_minute = 45
         target_second = 8
         target_timestamp = pd.to_datetime('today').replace(hour=target_hour, minute=target_minute, second=target_second)
-
+        central = pytz.timezone('US/Central')
         i = 0
 
         while i < limit:
-            current_time = pd.to_datetime('now')
+            current_time = pd.to_datetime('now').tz_localize(pytz.utc).tz_convert(central).tz_localize(None)
             if current_time >= target_timestamp:
                 self.driver.find_element_by_name("submit").click()
                 print('Clicked')
