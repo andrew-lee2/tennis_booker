@@ -204,6 +204,7 @@ class Caswell(object):
 
 def run_booker(booking_dt, match_type, username, password, driver,
                twilio_user=None, twilio_pw=None, return_number=None, book_now=False):
+    print('{} / {} / {} / {} / {} / {} / {} / {} / {}'.format(booking_dt, match_type, username, password, driver, twilio_user, twilio_pw, return_number, book_now))
     caswell = Caswell(booking_dt, match_type, username, password, driver,
                       twilio_user, twilio_pw, return_number, book_now)
 
