@@ -6,7 +6,7 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 import os
 from tennis_booker.court_booker.book_court import run_booker
 from tennis_booker.message_parser.parser import Parser
-from tennis_booker.message_parser.send_message import send_response, get_twilio_creds
+from tennis_booker.message_parser.send_message import send_response
 import pandas as pd
 import psycopg2
 import logging
@@ -56,10 +56,9 @@ def sms_parse():
     playing_time = message_parser.playing_time
     cas_user, cas_pw = get_tennis_creds()
     chromedriver_path = get_chromedriver_path()
-    twilio_user, twilio_pw = get_twilio_creds()
 
     booker_args = [playing_time, match_type, cas_user, cas_pw, chromedriver_path,
-                   twilio_user, twilio_pw, message_number, book_now]
+                   message_number, book_now]
 
     if book_now:
         booking_dt = pd.to_datetime('now') + pd.DateOffset(seconds=8)
