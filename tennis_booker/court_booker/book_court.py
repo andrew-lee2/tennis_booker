@@ -38,7 +38,9 @@ class Caswell(object):
                     print('Retry chromedriver number {}'.format(str(i)))
 
         else:
-            chrome_driver = webdriver.Chrome(self.driver_path)
+            options = webdriver.ChromeOptions()
+            options.add_argument('headless')
+            chrome_driver = webdriver.Chrome(self.driver_path, chrome_options=options)
 
         return chrome_driver
 
@@ -88,7 +90,7 @@ class Caswell(object):
                 break
             else:
                 counter += 1
-                time.sleep(.1)
+                time.sleep(.5)
                 print('Waiting on time to book')
                 continue
 
@@ -143,7 +145,7 @@ class Caswell(object):
         select.select_by_value(court_number)
 
     def _get_click_response(self):
-        booking_response_xpath = '// *[ @ id = "body-wrapper"] / fieldset / table / tbody / tr / td[2]'
+        booking_response_xpath = '//*[@id="body-wrapper"]/fieldset/table/tbody/tr/td[2]'
         return self.driver.find_element_by_xpath(booking_response_xpath).text
 
     def _click_submit(self):
@@ -199,7 +201,7 @@ class Caswell(object):
         booked_court_message = 'The reservation was scheduled successfully'
         no_courts_message = 'There are no open courts'
         court_in_message = re.findall('Crt [0-9]', message)
-        parsed_response = {}
+        parsed_response = {'code': 2, 'valid_info': None}
 
         if court_in_message:
             # try other court

@@ -2,13 +2,11 @@ from tennis_booker.court_booker.book_court import run_booker
 import pandas as pd
 
 
-booking_dt = pd.to_datetime('2018-08-05 16:00:00')
+booking_dt = pd.to_datetime('2018-08-07 16:00:00')
 match_type = 'singles'
 username = ''
 password = ''
 driver = '/home/andrew/Downloads/chromedriver'
-twilio_user = ''
-twilio_pw = ''
 return_number = ''
 book_now = True
 
