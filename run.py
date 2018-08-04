@@ -79,7 +79,7 @@ def sms_parse():
     if response_str:
         send_response(message_number, response_str)
 
-    return 'finished'
+    return 'Finished'
 
 
 def get_tennis_creds():
