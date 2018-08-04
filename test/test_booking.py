@@ -11,7 +11,6 @@ return_number = ''
 book_now = True
 
 
-
 def test_run_booker():
     run_booker(booking_dt, match_type, username, password, driver, return_number, book_now)
 
