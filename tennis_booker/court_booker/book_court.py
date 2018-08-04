@@ -85,14 +85,13 @@ class Caswell(object):
                 self.default_court = parsed_info['valid_info']
                 self._select_court(self.default_court)
                 print('Trying to book {}'.format(self.default_court))
-            elif counter > 2000:
+            elif counter > 1500:
                 parsed_info = {'code': 5, 'valid_info': None}
                 break
             else:
                 counter += 1
                 time.sleep(.5)
                 print('Waiting on time to book')
-                continue
 
             self._click_submit()
             message = self._get_click_response()
