@@ -35,6 +35,8 @@ class Parser(object):
 
     def _get_booking_utc(self):
         booking_time = self.booking_time.tz_localize('US/Central')
+        now = pd.to_datetime('now').tz_localize('US/Central')
+        booking_time = booking_time + (booking_time.dst() - now.dst())
         booking_time = booking_time.astimezone('UTC')
         self.booking_time = booking_time.isoformat()
 
