@@ -76,6 +76,7 @@ class Caswell(object):
     def try_to_book(self):
         self._initial_form_fill()
         self._click_submit()
+        time.sleep(.3)
         message = self._get_click_response()
         parsed_info = self._parse_court_response(message)
         counter = 0
@@ -230,6 +231,7 @@ def run_booker(booking_dt, match_type, username, password, driver,
     caswell.login_to_caswell()
     caswell.go_to_courtsheet()
     caswell.go_to_form()
+    time.sleep(.5)
     caswell.try_to_book()
 
     if caswell.response_message:
