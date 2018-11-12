@@ -79,6 +79,7 @@ class Caswell(object):
         time.sleep(.3)
         message = self._get_click_response()
         parsed_info = self._parse_court_response(message)
+        print(parsed_info)
         counter = 0
 
         while parsed_info['code'] in [0, 2]:
@@ -95,8 +96,10 @@ class Caswell(object):
                 print('Waiting on time to book')
 
             self._click_submit()
+            time.sleep(.3)
             message = self._get_click_response()
             parsed_info = self._parse_court_response(message)
+            print(parsed_info)
 
         self.response_message = self._code_responses(parsed_info['code'])
         print(self.response_message)
