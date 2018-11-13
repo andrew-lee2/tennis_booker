@@ -136,10 +136,12 @@ class Caswell(object):
         start_time = self.driver.find_element_by_id("startTime")
         start_time.clear()
         start_time.send_keys(self._get_start_time())
+        print(self.driver.find_element_by_id("startTime"))
 
         end_time = self.driver.find_element_by_id("endTime")
         end_time.clear()
         end_time.send_keys(self._get_end_time())
+        print(self.driver.find_element_by_id("endTime"))
 
         self._select_court(self.default_court)
 
@@ -159,7 +161,7 @@ class Caswell(object):
             except common.exceptions.NoSuchElementException:
                 tries += 1
                 # FIXME i think we should just return a different code
-                # print(self.driver.current_url)
+                print(self.driver.current_url)
                 # self._click_submit()
                 print(self.driver.find_element_by_id("startTime"))
                 time.sleep(.2)
