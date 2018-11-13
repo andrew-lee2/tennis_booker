@@ -240,7 +240,9 @@ def run_booker(booking_dt, match_type, username, password, driver,
 
     caswell.driver = caswell.initialize_webdriver()
     caswell.login_to_caswell()
+    time.sleep(.5)
     caswell.go_to_courtsheet()
+    time.sleep(.5)
     caswell.go_to_form()
     time.sleep(.5)
     caswell.try_to_book()
