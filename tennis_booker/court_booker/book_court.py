@@ -163,6 +163,8 @@ class Caswell(object):
                 # FIXME i think we should just return a different code
                 print(self.driver.current_url)
                 # self._click_submit()
+                self.go_to_form()
+                self._initial_form_fill()
                 print(self.driver.find_element_by_id("startTime"))
                 time.sleep(.2)
 
