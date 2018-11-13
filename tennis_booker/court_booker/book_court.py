@@ -157,7 +157,11 @@ class Caswell(object):
                 return self.driver.find_element_by_xpath(booking_response_xpath).text
             except common.exceptions.NoSuchElementException:
                 tries += 1
+                print(self.driver.current_url)
+                self._click_submit()
                 time.sleep(.2)
+
+        return None
 
     def _click_submit(self):
         self.driver.find_element_by_name("submit").click()
