@@ -134,10 +134,11 @@ class Caswell(object):
         date.send_keys(self._get_date())
 
         start_time = self.driver.find_element_by_id("startTime")
-        end_time = self.driver.find_element_by_id("endTime")
         start_time.clear()
-        end_time.clear()
         start_time.send_keys(self._get_start_time())
+
+        end_time = self.driver.find_element_by_id("endTime")
+        end_time.clear()
         end_time.send_keys(self._get_end_time())
 
         self._select_court(self.default_court)
@@ -157,8 +158,10 @@ class Caswell(object):
                 return self.driver.find_element_by_xpath(booking_response_xpath).text
             except common.exceptions.NoSuchElementException:
                 tries += 1
-                print(self.driver.current_url)
-                self._click_submit()
+                # FIXME i think we should just return a different code
+                # print(self.driver.current_url)
+                # self._click_submit()
+                print(self.driver.find_element_by_id("startTime"))
                 time.sleep(.2)
 
         return None
