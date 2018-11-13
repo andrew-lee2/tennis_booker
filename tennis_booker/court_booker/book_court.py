@@ -124,6 +124,7 @@ class Caswell(object):
         return "1" if self.singles_or_doubles == 'singles' else "2"
 
     def _initial_form_fill(self):
+        print(self.driver.current_url)
         mode_select = Select(self.driver.find_element_by_name("listMatchTypeID"))
         singles_doubles_value = self._get_singles_doubles_value()
         mode_select.select_by_value(singles_doubles_value)
