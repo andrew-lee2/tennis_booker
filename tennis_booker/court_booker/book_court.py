@@ -1,5 +1,5 @@
 from selenium.webdriver.support.ui import Select
-from selenium import webdriver
+from selenium import webdriver, common
 import pandas as pd
 import time
 from tennis_booker.message_parser.send_message import send_response
@@ -149,7 +149,14 @@ class Caswell(object):
 
     def _get_click_response(self):
         booking_response_xpath = '//*[@id="body-wrapper"]/fieldset/table/tbody/tr/td[2]'
-        return self.driver.find_element_by_xpath(booking_response_xpath).text
+        tries = 5
+
+        while tries > 0:
+            try:
+                return self.driver.find_element_by_xpath(booking_response_xpath).text
+            except common.exceptions.NoSuchElementException:
+                tries += 1
+                time.sleep(.2)
 
     def _click_submit(self):
         self.driver.find_element_by_name("submit").click()
