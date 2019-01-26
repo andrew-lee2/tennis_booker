@@ -195,7 +195,7 @@ class Caswell(object):
         :param message: str
         :return: tuple (status, valid_info)
         """
-
+        print(message)
         too_early_message = 'Reservations cannot be made more than 2 days in advance'
         booked_court_message = 'The reservation was scheduled successfully'
         no_courts_message = 'There are no open courts'

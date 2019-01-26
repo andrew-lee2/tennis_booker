@@ -2,6 +2,7 @@
 .idea/
 venv/
 geckodriver.log
+test/test_booking.py
 tennis_venv/
 .env
 __pycache__/
