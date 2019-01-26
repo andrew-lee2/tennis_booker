@@ -1,5 +1,5 @@
 from selenium.webdriver.support.ui import Select
-from selenium import webdriver
+from selenium import webdriver, common
 import pandas as pd
 import time
 from tennis_booker.message_parser.send_message import send_response
@@ -76,8 +76,10 @@ class Caswell(object):
     def try_to_book(self):
         self._initial_form_fill()
         self._click_submit()
+        time.sleep(.3)
         message = self._get_click_response()
         parsed_info = self._parse_court_response(message)
+        print(parsed_info)
         counter = 0
 
         while parsed_info['code'] in [0, 2]:
@@ -94,8 +96,10 @@ class Caswell(object):
                 print('Waiting on time to book')
 
             self._click_submit()
+            time.sleep(.3)
             message = self._get_click_response()
             parsed_info = self._parse_court_response(message)
+            print(parsed_info)
 
         self.response_message = self._code_responses(parsed_info['code'])
         print(self.response_message)
@@ -120,6 +124,7 @@ class Caswell(object):
         return "1" if self.singles_or_doubles == 'singles' else "2"
 
     def _initial_form_fill(self):
+        print(self.driver.current_url)
         mode_select = Select(self.driver.find_element_by_name("listMatchTypeID"))
         singles_doubles_value = self._get_singles_doubles_value()
         mode_select.select_by_value(singles_doubles_value)
@@ -129,11 +134,14 @@ class Caswell(object):
         date.send_keys(self._get_date())
 
         start_time = self.driver.find_element_by_id("startTime")
-        end_time = self.driver.find_element_by_id("endTime")
         start_time.clear()
-        end_time.clear()
         start_time.send_keys(self._get_start_time())
+        print(self.driver.find_element_by_id("startTime"))
+
+        end_time = self.driver.find_element_by_id("endTime")
+        end_time.clear()
         end_time.send_keys(self._get_end_time())
+        print(self.driver.find_element_by_id("endTime"))
 
         self._select_court(self.default_court)
 
@@ -145,7 +153,22 @@ class Caswell(object):
 
     def _get_click_response(self):
         booking_response_xpath = '//*[@id="body-wrapper"]/fieldset/table/tbody/tr/td[2]'
-        return self.driver.find_element_by_xpath(booking_response_xpath).text
+        tries = 5
+
+        while tries > 0:
+            try:
+                return self.driver.find_element_by_xpath(booking_response_xpath).text
+            except common.exceptions.NoSuchElementException:
+                tries += 1
+                # FIXME i think we should just return a different code
+                print(self.driver.current_url)
+                # self._click_submit()
+                self.go_to_form()
+                self._initial_form_fill()
+                print(self.driver.find_element_by_id("startTime"))
+                time.sleep(.2)
+
+        return None
 
     def _click_submit(self):
         self.driver.find_element_by_name("submit").click()
@@ -228,8 +251,11 @@ def run_booker(booking_dt, match_type, username, password, driver,
 
     caswell.driver = caswell.initialize_webdriver()
     caswell.login_to_caswell()
+    time.sleep(.5)
     caswell.go_to_courtsheet()
+    time.sleep(.5)
     caswell.go_to_form()
+    time.sleep(.5)
     caswell.try_to_book()
 
     if caswell.response_message:
