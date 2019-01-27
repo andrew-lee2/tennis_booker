@@ -80,7 +80,7 @@ class Caswell(object):
         parsed_info = self._parse_court_response(message)
         counter = 0
 
-        while parsed_info['code'] in [0, 2]:
+        while parsed_info['code'] in [0, 2, 4]:
             if parsed_info['code'] == 0:
                 self.default_court = parsed_info['valid_info']
                 self._select_court(self.default_court)
