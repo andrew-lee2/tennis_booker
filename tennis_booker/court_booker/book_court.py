@@ -85,7 +85,9 @@ class Caswell(object):
                 self.default_court = parsed_info['valid_info']
                 self._select_court(self.default_court)
                 print('Trying to book {}'.format(self.default_court))
-            elif counter > 1500:
+            if parsed_info['code'] == 4:
+                self._initial_form_fill()
+            elif counter > 500:
                 parsed_info = {'code': 5, 'valid_info': None}
                 break
             else:
@@ -201,6 +203,7 @@ class Caswell(object):
         no_courts_message = 'There are no open courts'
         court_in_message = re.findall('Crt [0-9]', message)
         parsed_response = {'code': 2, 'valid_info': None}
+        is_required = 'is required'
 
         if court_in_message:
             # try other court
@@ -217,6 +220,9 @@ class Caswell(object):
         elif no_courts_message in message:
             parsed_response['code'] = 3
             parsed_response['valid_info'] = None
+        elif is_required in message:
+            parsed_response['code'] = 4
+            parsed_response['valid_info'] = None
 
         return parsed_response
 
@@ -227,9 +233,13 @@ def run_booker(booking_dt, match_type, username, password, driver,
                       return_number, book_now)
 
     caswell.driver = caswell.initialize_webdriver()
+    time.sleep(.5)
     caswell.login_to_caswell()
+    time.sleep(.5)
     caswell.go_to_courtsheet()
+    time.sleep(.5)
     caswell.go_to_form()
+    time.sleep(.5)
     caswell.try_to_book()
 
     if caswell.response_message:
